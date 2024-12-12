@@ -1,0 +1,15 @@
+{
+  "name": "mraa-web-common",
+  "version": "1.0.0",
+  "description": "Library of common methods for use in MRAA web applications",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "@mraa-tech/web-common"
+  },
+  "author": "James Green",
+  "license": "ISC"
+}
