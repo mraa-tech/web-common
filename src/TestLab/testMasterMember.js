@@ -1,16 +1,12 @@
 function testGetMemberByEmail() {
    const member = getMemberByEmail("jamesgreen.311@gmail.com")
-   Logger.log(member ? member : "No member found")
+   Logger.log(isEmptyObject(member) ? "No member found" : member)
 
-   const statusFldPos = getFldPos(
-      masterTabDef("memberdirectory").schema,
-      "status"
-   )
-   const statusMsg = statusFldPos
-      ? `Status Index: ${statusFldPos} `
-      : "Status not found"
-   Logger.log(`${statusMsg}`)
+   Logger.log(isMemberActive("jamesgreen.311@gmail.com"))
+   Logger.log(isMemberExhibitor("jamesgreen.311@gmail.com"))
+}
 
-   Logger.log(`Active: ${isMemberActive("jamesgreen.311@gmail.com")}`)
-   Logger.log(`Exhibitor: ${isMemberExhibitor("jamesgreen.311@gmail.com")}`)
+function testGetBoardMembers() {
+   const boardMembers = getBoardMembers()
+   Logger.log(boardMembers)
 }

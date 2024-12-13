@@ -1,6 +1,16 @@
 // Id for Call For Entries Spreadsheet File
 const CALLFORENTRIES_ID = "1eJuLyL_MhXy_s8kKm8sYkUsJkzLMP7M-kfVzp_LxAVQ"
 
+/**
+ * Contains the definition of all necessary tables in the Call for Entries spreadsheet
+ * For standard tables, use the buildSchema() function to build the schema from the header row.
+ * For pivot tables, use of the schema property or the buildSchema() function should be decided by the developer.
+ * For dashboard sheets, use the schema property.
+ * 
+ * @param {object} table 
+ * @returns {object} table definition
+ * 
+ */
 function cfeTabDef(table) {
    const tables = {
       exhibits: {

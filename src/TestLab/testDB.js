@@ -1,3 +1,15 @@
+function testBuildTableSchema() {
+   const membersTable = masterTabDef("boardmembers")
+   const membersSchema = buildTableSchema(
+      MASTERMEMBER_ID,
+      membersTable.name,
+      membersTable.headers
+   )
+   Logger.log(membersSchema)
+   Logger.log(membersSchema.boardrole)
+   Logger.log(membersSchema.firstname)
+}
+
 function testGetMemberFldPos() {
    testGetFldPos("email")
    testGetFldPos("lastname")

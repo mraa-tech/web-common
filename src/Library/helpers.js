@@ -22,3 +22,7 @@ function helperColToIndex(col) {
    return colToAscii - indexOffset
 }
 String.prototype.colToIndex = helperColToIndex
+
+function isEmptyObject(obj) {
+   return Object.keys(obj).length === 0
+}

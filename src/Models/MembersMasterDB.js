@@ -1,6 +1,15 @@
 // Id for Membership Spreadsheet File
 const MASTERMEMBER_ID = "1puqturm6WCBtfL3uaT_YICKHI9StLcPA4SosBuMs4ZY"
 
+/**
+ * Contains the definition of all necessary tables in the master members spreadsheet.
+ * For standard tables, use the buildSchema() function to build the schema from the header row.
+ * For pivot tables, use of the schema property or the buildSchema() function should be decided by the developer.
+ * For dashboard sheets, use the schema property.
+ * 
+ * @param {object} table 
+ * @returns {object} table definition
+ */
 function masterTabDef(table) {
    const tables = {
       memberdirectory: {
@@ -55,7 +64,7 @@ function masterTabDef(table) {
       boardmembers: {
          name: "Board Members",
          type: "pivot",
-         headers: 2,
+         headers: 1,
          schema: {
             boardrole: "a",
             lastnamename: "b",
@@ -72,33 +81,33 @@ function masterTabDef(table) {
  * Gets a member from the master spreadsheet by email (primary key)
  *
  * @param {string} email
- * @returns [] array of member data
+ * @returns {object} member object
  */
 function getMemberByEmail(email) {
    const memberTablesDef = masterTabDef("memberdirectory")
-   const membersTable = connect(MASTERMEMBER_ID).getSheetByName(
-      memberTablesDef.name
-   )
-   const memberSchema = memberTablesDef.schema
-   const emailPos = getFldPos(memberSchema, "email")
+   const conn = connect(MASTERMEMBER_ID)
+   const membersTable = conn.getSheetByName(memberTablesDef.name)
+   const memberSchema = buildTableSchema(membersTable, memberTablesDef.headers)
+   const emailPos = memberSchema.email - 1 // 0-based index
    const headers = memberTablesDef.headers
-   const startRow = headers + 1
+   const startRow = headers + 1 // skip the header row
    const startCol = 1
-   const data = membersTable
-      .getRange(
-         startRow,
-         startCol,
-         membersTable.getLastRow() - headers,
-         membersTable.getLastColumn()
-      )
-      .getDisplayValues()
+   const endRow = membersTable.getLastRow()
+   const endCol = membersTable.getLastColumn()
+
+   const membersData = membersTable.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
 
    /*
     * Filter the data to find the member with the matching email address.
     * The data variable is an array of arrays.
     * The member data is in the first element of the array.
     */
-   const member = data.filter(
+   const member = membersData.filter(
       (m) => m[emailPos].toLowerCase() === email.toLowerCase()
    )[0]
 
@@ -108,11 +117,54 @@ function getMemberByEmail(email) {
        * Convert the array of data to an object
        */
       for (let key in memberSchema) {
-         m[key] = member[memberSchema[key].colToIndex()]
+         let col = memberSchema[key] - 1 // convert to zero-based index
+         m[key] = member[col]
       }
    }
 
    return m
+}
+
+/**
+ * Retrieve a list of board members from the Master Member spreadsheet pivot table.
+ *
+ * @returns array of board members
+ */
+function getBoardMembers() {
+   const boardMembersTableDef = masterTabDef("boardmembers")
+   const conn = connect(MASTERMEMBER_ID)
+   const boardMembersTable = conn.getSheetByName(boardMembersTableDef.name)
+   const boardMembersSchema = buildTableSchema(
+      boardMembersTable,
+      boardMembersTableDef.headers
+   )
+
+   const startRow = boardMembersTableDef.headers + 1
+   const endRow = boardMembersTable.getLastRow() - 1
+   const startCol = 1
+   const endCol = boardMembersTable.getLastColumn()
+
+   const boardMembersData = boardMembersTable.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+
+   /**
+    * Convert the array of data to an object
+    * The boardMembersData variable is an array of arrays.
+    */
+   let boardMembers = []
+   for (let row = 0; row < endRow; row++) {
+      let boardMember = {}
+      for (let key in boardMembersSchema) {
+         let fldPos = boardMembersSchema[key] - 1
+         boardMember[key] = boardMembersData[row][fldPos]
+      }
+      boardMembers.push(boardMember)
+   }
+   return boardMembers
 }
 
 /**

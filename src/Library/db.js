@@ -26,3 +26,22 @@ function getFldPos(schema, fldName) {
    const fldPos = schema[fldName] ? schema[fldName].colToIndex() : null
    return parseInt(fldPos)
 }
+
+/**
+ * Builds a table schema from a spreadsheet with a header row.
+ * Works best if the sheet is not a dashboard type.
+ * Note: dashboard is defined as a sheet wit multiple pivot tables.
+ * 
+ * @param {object} sheet
+ * @param {Integer} headerStart (default 1)
+ * @returns {object} schema
+ * @example buildTableSchema(memberdirectory, 2)
+ */
+function buildTableSchema(sheet, headerStart = 1) {
+   const schema = {}
+   const header = sheet.getRange(headerStart, 1, 1, sheet.getLastColumn()).getDisplayValues()[0]
+   header.forEach((fld, i) => {
+      schema[fld.replace(/\s/g, '').toLowerCase()] = i + 1
+   })
+   return schema
+}
