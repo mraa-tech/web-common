@@ -1,5 +1,0 @@
-LIBRARY_LINK =
-   "https://script.google.com/macros/library/d/1upLmjjJDRdwVwzr91tLpdA9ouZuNMn_X1AvP_MtiSunmWcxMXNC6lEkA/1" // Version 1
-   "https://script.google.com/macros/library/d/1upLmjjJDRdwVwzr91tLpdA9ouZuNMn_X1AvP_MtiSunmWcxMXNC6lEkA/2" // Version 2
-
-Deployment_ID = "AKfycbyV-lW3XcnKn7GQQcSUXt9MvqLvaav2u4PUujFgO1ifUN9NdMIVr94Cj_IyLgGm41Nghw" // Version 2
