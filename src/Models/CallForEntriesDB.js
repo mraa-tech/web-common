@@ -17,102 +17,27 @@ function cfeTabDef(table) {
          name: "Exhibits",
          type: "standard",
          headers: 1,
-         schema: {
-            eventid: "a",
-            eventtitle: "b",
-            firstname: "c",
-            lastname: "d",
-            email: "e",
-            phone: "f",
-            worktitle: "g",
-            medium: "h",
-            width: "i",
-            height: "j",
-            price: "k",
-            filename: "l",
-            fileid: "m",
-            member: "n",
-            availablity: "o", // not currently used
-            hidden: "p", // not currently used
-            fullname: "q", // not currently used
-            timestamp: "r", // not currently used
-            securitytoken: "s", // not currently used
-         },
       },
       config: {
          name: "Config",
          type: "standard",
          headers: 1,
-         schema: {
-            id: "a",
-            exhibitname: "b",
-            cfeopendate: "c",
-            cfeclosedate: "d",
-            maxentriesperartist: "e",
-            maxentriespershow: "f",
-            imagefolderid: "g",
-            allownfs: "h",
-            status: "i",
-            payfeeonly: "j",
-            purchaselimit: "k",
-            showopendate: "l",
-            showclosedate: "m",
-            entryfee: "n",
-            registrationlink: "o",
-            applicationversion: "p",
-            feestructure: "q",
-            maxprice: "r",
-            showfee: "s",
-            location: "t",
-            cashdiscount: "u",
-         },
       },
       appsettings: {
          name: "AppSettings",
          type: "standard",
          headers: 1,
-         schema: {
-            maximagesize: "a",
-            cfecontact: "b",
-            // statuslist: "c2:c", // Moved to Data List sheet
-            applicationlink: "d",
-            applicationversion: "e",
-            treasurername: "i",
-            treasureremail: "j",
-            confirmationdocid: "k",
-            destinationfolderid: "l",
-         },
       },
       opencalls: {
          name: "Open Calls",
          type: "pivot",
          headers: 1,
          summary: "none",
-         schema: {
-            cfeclosedate: "a",
-            exhibitid: "b",
-            exhibitname: "c",
-            maxentriesperartist: "d",
-            entryfee: "e",
-            imagefolderid: "f",
-         },
       },
       payments: {
          name: "Payments",
          type: "standard",
          headers: 1,
-         schema: {
-            exhibitid: "a",
-            exhibitname: "b",
-            exhibitlocation: "c", // in config file
-            artistemail: "d",
-            artistlastname: "e",
-            artistfirstname: "f",
-            qtyentered: "g",
-            amountpaid: "h", // blank - entered by treasurer when payment is made
-            datereceived: "i", // blank - entered by treasurer when payment is made
-            timestamp: "j",
-         },
       },
       paymentdashboard: {
          name: "Payment Dashboard",
@@ -170,22 +95,27 @@ function cfeTabDef(table) {
  * @param {string} id Unique show identifier
  * @returns {object} Show object
  */
-function getExhibitById(id) {
+function getExhibitConfigById(id) {
    // connect to file and open sheet
    const cfeConfigTableDef = cfeTabDef("config")
-   const cfeConfigSchema = cfeConfigTableDef.schema
-   const idPos = getFldPos(cfeConfigSchema, "id")
    const headers = cfeConfigTableDef.headers
-   const startRow = headers + 1
-   const startCol = 1
+
    const cfeConfig = connect(CALLFORENTRIES_ID).getSheetByName(
       cfeConfigTableDef.name
    )
+   const cfeConfigSchema = buildTableSchema(cfeConfig, headers)
+
+   const idPos = cfeConfigSchema.exhibitid - 1 // zero based index
+   const startRow = headers + 1
+   const startCol = 1
+   const endRow = cfeConfig.getLastRow() - headers
+   const endCol = cfeConfig.getLastColumn()
+
    const cfeConfigData = cfeConfig.getSheetValues(
       startRow,
       startCol,
-      cfeConfig.getLastRow() - headers,
-      cfeConfig.getLastColumn()
+      endRow,
+      endCol
    )
    const showData = cfeConfigData.filter(
       (d) => d[idPos].toLowerCase() === id.toLowerCase()
@@ -196,7 +126,8 @@ function getExhibitById(id) {
     */
    let show = {}
    for (let key in cfeConfigSchema) {
-      show[key] = showData[cfeConfigSchema[key].colToIndex()]
+      let fldPos = cfeConfigSchema[key] - 1
+      show[key] = showData[fldPos]
    }
 
    return show
@@ -209,25 +140,28 @@ function getExhibitById(id) {
  */
 function getAppSettings() {
    const cfeAppsettingsTableDef = cfeTabDef("appsettings")
-   const cfeAppsettingsSchema = cfeAppsettingsTableDef.schema
    const headers = cfeAppsettingsTableDef.headers
-   const startRow = headers + 1
-   const endRow = startRow
-   const startCol = 1
+
    const cfeAppsettings = connect(CALLFORENTRIES_ID).getSheetByName(
       cfeAppsettingsTableDef.name
    )
+   const cfeAppsettingsSchema = buildTableSchema(cfeAppsettings, headers)
+
+   const startRow = headers + 1
+   const endRow = startRow
+   const startCol = 1
+   const endCol = cfeAppsettings.getLastColumn()
    const cfeAppsettingsData = cfeAppsettings.getSheetValues(
       startRow,
       startCol,
       endRow,
-      cfeAppsettings.getLastColumn()
+      endCol
    )
 
    let settings = {}
    for (let key in cfeAppsettingsSchema) {
-      settings[key] =
-         cfeAppsettingsData[0][cfeAppsettingsSchema[key].colToIndex()]
+      let fldPos = cfeAppsettingsSchema[key] - 1 // zero based index
+      settings[key] = cfeAppsettingsData[0][fldPos]
    }
    return settings
 }
@@ -239,13 +173,15 @@ function getAppSettings() {
  */
 function getOpenCalls() {
    const cfeOpenCallsTableDef = cfeTabDef("opencalls")
-   const cfeOpenCallsSchema = cfeOpenCallsTableDef.schema
    const headers = cfeOpenCallsTableDef.headers
-   const startRow = headers + 1
-   const startCol = 1
+
    const cfeOpenCalls = connect(CALLFORENTRIES_ID).getSheetByName(
       cfeOpenCallsTableDef.name
    )
+   const cfeOpenCallsSchema = buildTableSchema(cfeOpenCalls, headers)
+
+   const startRow = headers + 1
+   const startCol = 1
    const endRow = cfeOpenCalls.getLastRow() - 1
    const endCol = cfeOpenCalls.getLastColumn()
    const cfeOpenCallsData = cfeOpenCalls.getSheetValues(
@@ -259,7 +195,8 @@ function getOpenCalls() {
    for (let row = 0; row < endRow; row++) {
       let call = {}
       for (let key in cfeOpenCallsSchema) {
-         call[key] = cfeOpenCallsData[row][cfeOpenCallsSchema[key].colToIndex()]
+         let fldPos = cfeOpenCallsSchema[key] - 1 // zero based index
+         call[key] = cfeOpenCallsData[row][fldPos]
       }
       openCalls.push(call)
    }
@@ -274,15 +211,18 @@ function getOpenCalls() {
  */
 function getPaymentsDue() {
    const cfePaymentsTableDef = cfeTabDef("payments")
-   const cfePaymentsSchema = cfePaymentsTableDef.schema
    const headers = cfePaymentsTableDef.headers
-   const startRow = headers + 1
-   const startCol = 1
+
    const cfePayments = connect(CALLFORENTRIES_ID).getSheetByName(
       cfePaymentsTableDef.name
    )
+   const cfePaymentsSchema = buildTableSchema(cfePayments, headers)
+
+   const startRow = headers + 1
+   const startCol = 1
    const endRow = cfePayments.getLastRow() - 1
    const endCol = cfePayments.getLastColumn()
+
    const cfePaymentsData = cfePayments.getSheetValues(
       startRow,
       startCol,
@@ -294,11 +234,55 @@ function getPaymentsDue() {
    for (let row = 0; row < endRow; row++) {
       let payment = {}
       for (let key in cfePaymentsSchema) {
-         payment[key] =
-            cfePaymentsData[row][cfePaymentsSchema[key].colToIndex()]
+         let fldPos = cfePaymentsSchema[key] - 1 // zero based index
+         payment[key] = cfePaymentsData[row][fldPos]
       }
       payments.push(payment)
    }
 
    return payments
+}
+
+function getExhibitEntriesById(id) {
+   // get table definition
+   const exhibitTableDef = cfeTabDef("exhibits")
+   // set header rows
+   const headers = exhibitTableDef.headers
+   // connect and get table
+   const cfeExhibitEntries = connect(CALLFORENTRIES_ID).getSheetByName(
+      exhibitTableDef.name
+   )
+   // build schema from header
+   const exhibitEntriesSchema = buildTableSchema(cfeExhibitEntries, headers)
+   const idPos = exhibitEntriesSchema.exhibitid - 1
+
+   // set start and end of data range
+   const startRow = headers + 1
+   const startCol = 1
+   const endRow = cfeExhibitEntries.getLastRow() - headers
+   const endCol = cfeExhibitEntries.getLastColumn()
+   // get data
+   const exhibitEntriesData = cfeExhibitEntries.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+
+   // filter for requested exhibit id
+   const data = exhibitEntriesData.filter(
+      (d) => d[idPos].toLowerCase() === id.toLowerCase()
+   )
+
+   let entries = []
+   for (let row = 0; row < data.length; row++) {
+      let entry = {}
+      for (let key in exhibitEntriesSchema) {
+         let fldPos = exhibitEntriesSchema[key] - 1 // zero based index
+         entry[key] = data[row][fldPos]
+      }
+      entries.push(entry)
+   }
+
+   return entries
 }

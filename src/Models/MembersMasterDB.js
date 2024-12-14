@@ -16,31 +16,6 @@ function masterTabDef(table) {
          name: "Member Directory",
          type: "standard",
          headers: 2,
-         schema: {
-            email: "a", // primary key
-            firstname: "b",
-            lastname: "c",
-            preferredname: "d",
-            status: "e",
-            streetaddress: "f",
-            streetaddressextended: "g",
-            city: "h",
-            state: "i",
-            zipcode: "j",
-            primarycontactnumber: "k",
-            alternatecontactnumber: "l",
-            membership: "m",
-            jurydate: "n",
-            medium: "o", // not currently used
-            datejoined: "p", // not currently used
-            artistsignature: "q", // not currently used
-            businessname: "r", // not currently used
-            comments: "s",
-            boardmember: "t", // binary
-            boardrole: "u", // list
-            jurycommittee: "v", // binary
-            website: "w",
-         },
       },
       duespayments: {
          name: "Dues Payments",
@@ -65,13 +40,6 @@ function masterTabDef(table) {
          name: "Board Members",
          type: "pivot",
          headers: 1,
-         schema: {
-            boardrole: "a",
-            lastnamename: "b",
-            firstname: "c",
-            email: "d",
-            total: "e",
-         },
       },
    }
    return tables[table]
@@ -159,7 +127,7 @@ function getBoardMembers() {
    for (let row = 0; row < endRow; row++) {
       let boardMember = {}
       for (let key in boardMembersSchema) {
-         let fldPos = boardMembersSchema[key] - 1
+         let fldPos = boardMembersSchema[key] - 1 // zero based index
          boardMember[key] = boardMembersData[row][fldPos]
       }
       boardMembers.push(boardMember)
