@@ -21,19 +21,14 @@ function masterTabDef(table) {
          name: "Dues Payments",
          type: "standard",
          headers: 2,
-         schema: {
-            email: "a", // primary key
-            paymentdate: "b", // date
-            grossamount: "c",
-            netamount: "d", // calculated
-            expires: "e",
-            paymentmethod: "f", // list
-            comments: "g",
-            lastname: "h", // calculated lookup
-            firstname: "i", // calculated lookup
-            membership: "j", // calculated lookup
-            phonenumber: "k", // calculated lookup
-            businessname: "l", // calculated lookup
+         summary: {
+            rows: 2,
+            type: "total",
+            schema: {
+               text: 0,
+               grossamount: 2,
+               netamount: 3,
+            },
          },
       },
       boardmembers: {
@@ -43,6 +38,86 @@ function masterTabDef(table) {
       },
    }
    return tables[table]
+}
+
+/**
+ * Get the dues payments from the master members spreadsheet
+ *
+ * @returns {object} Dues Payments object
+ */
+function getDuesPayments() {
+   const duesPaymentsTableDef = masterTabDef("duespayments")
+   const headers = duesPaymentsTableDef.headers
+   const summary = duesPaymentsTableDef.summary
+
+   const duesPaymentsTable = connect(MASTERMEMBER_ID).getSheetByName(
+      duesPaymentsTableDef.name
+   )
+   const duesPaymentsSchema = buildTableSchema(duesPaymentsTable, headers)
+
+   const startRow = headers + 1
+   const endRow = duesPaymentsTable.getLastRow() - summary.rows
+   const startCol = 1
+   const endCol = duesPaymentsTable.getLastColumn()
+
+   /**
+    * Get the dues payments data from the dues payments table.
+    */
+   const duesPaymentsData = duesPaymentsTable.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+
+   /**
+    * Get the dues totals data from the summary rows.
+    */
+   const duesTotalsData = duesPaymentsTable.getSheetValues(
+      endRow + 1,
+      startCol,
+      summary.rows,
+      startCol + summary.schema.netamount + 1
+   )
+
+   /**
+    * Builds an array of dues payment objects from the dues payments data.
+    * @returns {array} Dues payment objects
+    */
+   let duesPaymentsArr = []
+   for (let row = 0; row < duesPaymentsData.length; row++) {
+      let duesPayment = {}
+      for (let key in duesPaymentsSchema) {
+         let col = duesPaymentsSchema[key] - 1 // zero based index
+         duesPayment[key] = duesPaymentsData[row][col]
+      }
+      duesPaymentsArr.push(duesPayment)
+   }
+
+   /**
+    * Builds an array of dues totals objects from the dues totals data.
+    * @returns {array} Dues totals objects
+    */
+   let duesTotalsArr = []
+   for (let row = 0; row < duesTotalsData.length; row++) {
+      let duesTotal = {}
+      for (let key in summary.schema) {
+         let col = summary.schema[key]
+         duesTotal[key] = duesTotalsData[row][col]
+      }
+      duesTotalsArr.push(duesTotal)
+   }
+
+   /**
+    * Builds an object of dues payments and totals
+    * @returns {object} Dues payments and totals
+    */
+   const duesPaymentsAll = {
+      data: duesPaymentsArr,
+      totals: duesTotalsArr,
+   }
+
+   return duesPaymentsAll
 }
 
 /**

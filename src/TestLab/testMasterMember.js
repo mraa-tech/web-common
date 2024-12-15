@@ -1,3 +1,9 @@
+function testGetDuesPayments() {
+   const duesPayments = getDuesPayments()
+   Logger.log(duesPayments.data[0]) // first dues payment
+   Logger.log(duesPayments.totals)
+}
+
 function testGetMemberByEmail() {
    const member = getMemberByEmail("jamesgreen.311@gmail.com")
    Logger.log(isEmptyObject(member) ? "No member found" : member)
@@ -20,4 +26,5 @@ function testGetBoardMembers() {
 function testMemberRunAll() {
    testGetBoardMembers()
    testGetMemberByEmail()
+   testGetDuesPayments()
 }
