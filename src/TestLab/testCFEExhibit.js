@@ -15,8 +15,8 @@ function testGetOpenCalls() {
    Logger.log(openCalls.length)
 }
 
-function testGetAppSettings() {
-   const appSettings = getAppSettings()
+function testGetCFEAppSettings() {
+   const appSettings = getCFEAppSettings()
    Logger.log(appSettings)
 }
 
@@ -26,7 +26,7 @@ function testGetExhibitConfigById() {
 }
 
 function testCFERunAll() {
-   testGetAppSettings()
+   testGetCFEAppSettings()
    testGetExhibitConfigById()
    testGetExhibitEntriesById()
    testGetOpenCalls()

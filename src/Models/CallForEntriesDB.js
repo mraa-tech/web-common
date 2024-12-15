@@ -138,7 +138,7 @@ function getExhibitConfigById(id) {
  *
  * @returns {object} App settings object
  */
-function getAppSettings() {
+function getCFEAppSettings() {
    const cfeAppsettingsTableDef = cfeTabDef("appsettings")
    const headers = cfeAppsettingsTableDef.headers
 
