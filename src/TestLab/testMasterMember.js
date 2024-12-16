@@ -20,6 +20,11 @@ function testGetMemberByEmail() {
 
 function testGetBoardMembers() {
    const boardMembers = getBoardMembers()
+   if (!isEmptyObject(boardMembers)) {
+      for (let i = 0; i < boardMembers.length; i++) {
+         Logger.log(boardMembers[i].boardrole)
+      }
+   }
    Logger.log(boardMembers)
 }
 
