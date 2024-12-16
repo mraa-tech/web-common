@@ -148,13 +148,38 @@ It is deployed as a library to the Google Apps Script environment.
 getMemberByEmail('joe@example.com') -> {object}
 
 ``` 
-const member = MRAACommonLibraries.getMemberByEmail('joe@example.com') 
+   const member = getMemberByEmail("joe@example.com")
+   Logger.log(isEmptyObject(member) ? "No member found" : member)
+
+   if (!isEmptyObject(member)) {
+      Logger.log(
+         `Is status active for ${member.firstname} ${member.lastname}? ${
+            isMemberActive("joe@example.com") ? "yes" : "no"
+         }`
+      )
+      Logger.log(
+         `Is member an Exhibitor? ${
+            isMemberExhibitor("joe@example.com") ? "yes" : "no"
+         }`
+      )
+   }
 ```
 
 getDuesPayments() -> {object}
 
 ``` 
 const duesPayments = MRAACommonLibraries.getDuesPayments() 
+const data = duesPayments.data
+const totals = duesPayments.totals
+
+for (let i = 0; i < data.length; i++) {
+  Logger.log(data[i].lastname)
+}
+
+for (let i = 0; i < totals.length; i++) {
+  Logger.log(totals[i].netamount.toFixed(2))
+}
+
 ```
 
 MRAACommonLibraries.getBoardMembers() -> {array of objects}
@@ -166,4 +191,39 @@ if (!isEmptyObject(boardMembers)) {
       Logger.log(boardMembers[i].boardrole)
   }
 }
+```
+
+MRAACommonLibraries.getExhibitEntriesById(id) -> {array of objects}
+
+```
+   const entries = getExhibitEntriesById("176BD2A")
+
+   Logger.log(`Entries for exhibit ${entries[0].exhibittitle}`)
+
+   for (let i = 0; i < entries.length; i++) {
+      Logger.log(entries[i].worktitle)
+   }
+
+```
+
+MRAACommonLibraries.getOpenCalls() -> {array of objects}
+
+```
+  const openCalls = MRAACommonLibraries.getOpenCalls()
+   
+  for (let i = 0; i < openCalls.length; i++) {
+    Logger.log(openCalls[i].exhibittitle)
+  }
+
+```
+
+MRAACommonLibraries.getPaymentsDue() -> {array of objects}
+
+```
+  const paymentsDue = MRAACommonLibraries.getPaymentsDue()
+
+  for (let i = 0; i < paymentsDue.length; i++) {
+    Logger.log(paymentsDue[i].exhibittitle)
+    Logger.log(`Amount paid for this entry: $${Number(paymentsDue[i].amountpaid).toFixed(2)}`)
+  }
 ```
