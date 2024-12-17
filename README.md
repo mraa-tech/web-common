@@ -145,6 +145,7 @@ It is deployed as a library to the Google Apps Script environment.
 - imagefolderid {string}
 
 ## Methods
+### Member Master
 getMemberByEmail('joe@example.com') -> {object}
 
 ``` 
@@ -182,7 +183,7 @@ for (let i = 0; i < totals.length; i++) {
 
 ```
 
-MRAACommonLibraries.getBoardMembers() -> {array of objects}
+getBoardMembers() -> {array of objects}
 
 ```    
 const boardMembers = MRAACommonLibraries.getBoardMembers()
@@ -192,8 +193,8 @@ if (!isEmptyObject(boardMembers)) {
   }
 }
 ```
-
-MRAACommonLibraries.getExhibitEntriesById(id) -> {array of objects}
+### Call for Entries
+getExhibitEntriesById(id) -> {array of objects}
 
 ```
    const entries = getExhibitEntriesById("176BD2A")
@@ -206,7 +207,7 @@ MRAACommonLibraries.getExhibitEntriesById(id) -> {array of objects}
 
 ```
 
-MRAACommonLibraries.getOpenCalls() -> {array of objects}
+getOpenCalls() -> {array of objects}
 
 ```
   const openCalls = MRAACommonLibraries.getOpenCalls()
@@ -217,7 +218,7 @@ MRAACommonLibraries.getOpenCalls() -> {array of objects}
 
 ```
 
-MRAACommonLibraries.getPaymentsDue() -> {array of objects}
+getPaymentsDue() -> {array of objects}
 
 ```
   const paymentsDue = MRAACommonLibraries.getPaymentsDue()
@@ -226,4 +227,38 @@ MRAACommonLibraries.getPaymentsDue() -> {array of objects}
     Logger.log(paymentsDue[i].exhibittitle)
     Logger.log(`Amount paid for this entry: $${Number(paymentsDue[i].amountpaid).toFixed(2)}`)
   }
+```
+
+getCFEAppSettings() -> {object}
+```
+  const appSettings = MRAACommonLibraries.getCFEAppSettings()
+  Logger.log(appSettings.applicationlink)
+  Logger.log(appSettings.applicationversion)
+```
+
+getExhibitConfigById(id) -> {object}
+```
+  const config = MRAACommonLibraries.getExhibitConfigById("176BD2A")
+  Logger.log(config.exhibittitle)
+  Logger.log(config.location)
+  Logger.log(config.status)
+  ```
+### Utilities
+isEmptyObject(obj) -> {boolean}
+```
+  const member = getMemberByEmail("joe@example.com")
+  Logger.log(isEmptyObject(member) ? "No member found" : member)
+```
+
+isMemberActive(email) -> {boolean}
+```
+const member = MRAACommonLibraries.getMemberByEmail("joe@example.com")
+Logger.log(Is status active for ${member.firstname} ${member.lastname}? ${
+          MRAACommonLibraries.isMemberActive("jamesgreen.311@gmail.com") ? "yes" : "no"
+        })
+```
+
+isMemberExhibitor(email) -> {boolean}
+```
+Logger.log(Is member an Exhibitor? ${MRAACommonLibries.isMemberExhibitor("jamesgreen.311@gmail.com") ? "yes" : "no"})
 ```
