@@ -1,4 +1,5 @@
 # Web Common
+[![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](https://github.com/google/clasp)
 
 This project is a collection of common web components for use in MRAA web applications. The primary purpose of this initial version is to provide a common set of data source definitions across all MRAA web applications.
 
