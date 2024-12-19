@@ -1,55 +1,96 @@
-function testBuildTableSchema() {
-   const membersTable = masterTabDef("boardmembers")
-   const membersSchema = buildTableSchema(
-      MASTERMEMBER_ID,
-      membersTable.name,
-      membersTable.headers
-   )
-   Logger.log(membersSchema)
-   Logger.log(membersSchema.boardrole)
-   Logger.log(membersSchema.firstname)
+function testDBRunAll() {
+   testGetMasterMemberId()
+   testGetCallForEntriesId()
+   testBuildTableSchema()
+   testGetTables()
+}
+function testGetMasterMemberId() {
+   const masterMemberId = getMasterMemberId()
+   Logger.log(`Master Member ID: ${masterMemberId}`)
 }
 
-function testGetMemberFldPos() {
-   testGetFldPos("email")
-   testGetFldPos("lastname")
+function testGetCallForEntriesId() {
+   const callForEntriesId = getCallForEntriesId()
+   Logger.log(`Call For Entries ID: ${callForEntriesId}`)
+}
+
+function testBuildTableSchema() {
+   const membersTableDef = masterTabDef("boardmembers")
+   const membersTable = connect(MASTERMEMBER_ID).getSheetByName(
+      membersTableDef.name
+   )
+   for (let key in membersTableDef) {
+      Logger.log(`Members Metadata Schema; ${key}: ${membersTableDef[key]}`)
+   }
+
+   const membersSchema = buildTableSchema(membersTable, membersTableDef.headers)
+   for (let key in membersSchema) {
+      Logger.log(`Board Members Built Schema; ${key}: ${membersSchema[key]}`)
+   }
+   Logger.log(`Board members role: ${membersSchema.boardrole}`)
+   Logger.log(`Board member first name: ${membersSchema.firstname}`)
 }
 
 function testGetFldPos(fldName) {
    const membersTable = masterTabDef("memberdirectory")
    const membersSchema = membersTable.schema
    const fldPos = getFldPos(membersSchema, fldName)
-   Logger.log(fldPos)
+   Logger.log(
+      `Calculated field position for ${fldName} in the ${membersTable.name}: ${fldPos}`
+   )
 }
 
 function testGetTables() {
    const membersTable = masterTabDef("memberdirectory")
-   Logger.log(membersTable)
+   Logger.log(
+      `Member Directory Schema; Name: ${membersTable.name}, Type: ${membersTable.type}, Headers: ${membersTable.headers}`
+   )
 
    const duesTable = masterTabDef("duespayments")
-   Logger.log(duesTable)
+   Logger.log(
+      `Dues Payments Schema; Name: ${duesTable.name}, Type: ${duesTable.type}, Headers: ${duesTable.headers}`
+   )
 
    const boardTable = masterTabDef("boardmembers")
-   Logger.log(boardTable)
-
-   const membersSchema = membersTable.schema
-   Logger.log(membersSchema)
+   Logger.log(
+      `Board Members Schema; Name; ${boardTable.name}, Type: ${boardTable.type}, Headers: ${boardTable.headers}`
+   )
 
    const cfeExhibitsTable = cfeTabDef("exhibits")
-   Logger.log(cfeExhibitsTable)
+   for (let key in cfeExhibitsTable) {
+      Logger.log(`Exhibits Metadata Schema; ${key}: ${cfeExhibitsTable[key]}`)
+   }
 
    const cfeConfigTable = cfeTabDef("config")
-   Logger.log(cfeConfigTable)
+   for (let key in cfeConfigTable) {
+      Logger.log(`CFE Config Metadata Schema; ${key}: ${cfeConfigTable[key]}`)
+   }
 
    const cfeAppSettingsTable = cfeTabDef("appsettings")
-   Logger.log(cfeAppSettingsTable)
+   for (let key in cfeAppSettingsTable) {
+      Logger.log(
+         `CFE App Settings Metadata Schema; ${key}: ${cfeAppSettingsTable[key]}`
+      )
+   }
 
    const cfeOpenCallsTable = cfeTabDef("opencalls")
-   Logger.log(cfeOpenCallsTable)
+   for (let key in cfeOpenCallsTable) {
+      Logger.log(
+         `CFE Open Calls Metadata Schema; ${key}: ${cfeOpenCallsTable[key]}`
+      )
+   }
 
    const cfePaymentsTable = cfeTabDef("payments")
-   Logger.log(cfePaymentsTable)
+   for (let key in cfePaymentsTable) {
+      Logger.log(
+         `CFE Payments Metadata Schema; ${key}: ${cfePaymentsTable[key]}`
+      )
+   }
 
    const cfePaymentDashboardTable = cfeTabDef("paymentdashboard")
-   Logger.log(cfePaymentDashboardTable)
+   for (let key in cfePaymentDashboardTable) {
+      Logger.log(
+         `CFE Payment Dashboard Metadata Schema; ${key}: ${cfePaymentDashboardTable[key]}`
+      )
+   }
 }

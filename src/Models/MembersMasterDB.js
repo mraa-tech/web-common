@@ -1,13 +1,10 @@
-// Id for Membership Spreadsheet File
-const MASTERMEMBER_ID = "1puqturm6WCBtfL3uaT_YICKHI9StLcPA4SosBuMs4ZY"
-
 /**
  * Contains the definition of all necessary tables in the master members spreadsheet.
  * For standard tables, use the buildSchema() function to build the schema from the header row.
  * For pivot tables, use of the schema property or the buildSchema() function should be decided by the developer.
  * For dashboard sheets, use the schema property.
- * 
- * @param {object} table 
+ *
+ * @param {object} table
  * @returns {object} table definition
  */
 function masterTabDef(table) {
