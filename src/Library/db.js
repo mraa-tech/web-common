@@ -68,7 +68,10 @@ function buildTableSchema(sheet, headerStart = 1) {
       .getRange(headerStart, 1, 1, sheet.getLastColumn())
       .getDisplayValues()[0]
    header.forEach((fld, i) => {
-      schema[fld.replace(/\s/g, "").toLowerCase()] = i + 1
+      // If column name is blank do not inlcude it in the schema.
+      if (fld) {
+         schema[fld.replace(/\s/g, "").toLowerCase()] = i + 1
+      }
    })
    return schema
 }

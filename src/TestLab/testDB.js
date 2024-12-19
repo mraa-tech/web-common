@@ -1,7 +1,8 @@
 function testDBRunAll() {
    testGetMasterMemberId()
    testGetCallForEntriesId()
-   testBuildTableSchema()
+   testBuildTableSchema("Member Directory", 2)
+
    testGetTables()
 }
 function testGetMasterMemberId() {
@@ -14,21 +15,14 @@ function testGetCallForEntriesId() {
    Logger.log(`Call For Entries ID: ${callForEntriesId}`)
 }
 
-function testBuildTableSchema() {
-   const membersTableDef = masterTabDef("boardmembers")
-   const membersTable = connect(MASTERMEMBER_ID).getSheetByName(
-      membersTableDef.name
-   )
-   for (let key in membersTableDef) {
-      Logger.log(`Members Metadata Schema; ${key}: ${membersTableDef[key]}`)
-   }
+function testBuildTableSchema(table, headers = 1) {
+   Logger.log(`Table: ${table}, Headers: ${headers}`)
+   const tableSheet = connect(MASTERMEMBER_ID).getSheetByName(table)
 
-   const membersSchema = buildTableSchema(membersTable, membersTableDef.headers)
-   for (let key in membersSchema) {
-      Logger.log(`Board Members Built Schema; ${key}: ${membersSchema[key]}`)
+   const tableSchema = buildTableSchema(tableSheet, headers)
+   for (let key in tableSchema) {
+      Logger.log(`Table Built Schema; ${key}: ${tableSchema[key]}`)
    }
-   Logger.log(`Board members role: ${membersSchema.boardrole}`)
-   Logger.log(`Board member first name: ${membersSchema.firstname}`)
 }
 
 function testGetFldPos(fldName) {
