@@ -37,7 +37,19 @@ It is deployed as a library to the Google Apps Script environment.
 - buisnessname {string}
 - comments {string}
 - boardmember {true/false}
-- boardrole {president/treasurer/publicity/web master/communications/technology/exhibits/membership/programming/recording secretary/gallery/past president}
+- boardrole {list} 
+   - president 
+   - treasurer 
+   - publicity
+   - web master
+   - communications
+   - technology
+   - exhibits
+   - membership
+   - programming
+   - recording secretary
+   - gallery
+   - past president
 - jurycommittee {true/false}
 - website {string}
 - instagram {string}
@@ -48,7 +60,11 @@ It is deployed as a library to the Google Apps Script environment.
 - paymentdate {mm/dd/yyyy}
 - grossamount {number}
 - netamount {number}
-- paymentmethod {cash/check/paypal/awarded}
+- paymentmethod {list}
+   - cash
+   - check
+   - paypal
+   - awarded
 - comments {string}
 - lastname {string}
 - firstname {string}
@@ -58,7 +74,19 @@ It is deployed as a library to the Google Apps Script environment.
 - forartisprofilepage {string}
 
 ### member master.board members
-- boardrole {president/treasurer/publicity/web master/communications/technology/exhibits/membership/programming/recording secretary/gallery/past president}
+- boardrole {list} 
+   - president 
+   - treasurer 
+   - publicity
+   - web master
+   - communications
+   - technology
+   - exhibits
+   - membership
+   - programming
+   - recording secretary
+   - gallery
+   - past president
 - lastname {string}
 - firstname {string}
 - email {email}
@@ -126,7 +154,10 @@ It is deployed as a library to the Google Apps Script environment.
 ### call for entries.appsettings
 - maximagesizemb {number}
 - cfecontact {email}
-- statuslist {planning/open/closed}
+- statuslist {list} 
+   - planning
+   - open
+   - closed
 - applicationlink {string}
 - applicationversion {string}
 - feestructurekey {string}
@@ -146,4 +177,4 @@ It is deployed as a library to the Google Apps Script environment.
 - imagefolderid {string}
 
 ## Usage
-[See the USAGE file for usage examples.](USAGE.MD)
+[See the USAGE file for usage examples.](docs/USAGE.MD)
