@@ -146,4 +146,4 @@ It is deployed as a library to the Google Apps Script environment.
 - imagefolderid {string}
 
 ## Usage
-[See the USAGE file for usage examples.](USAGE.MD)
+[See the USAGE file for usage examples.](./USAGE.MD)
