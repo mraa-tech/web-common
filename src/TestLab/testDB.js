@@ -5,6 +5,7 @@ function testDBRunAll() {
 
    testGetTables()
 }
+
 function testGetMasterMemberId() {
    const masterMemberId = getMasterMemberId()
    Logger.log(`Master Member ID: ${masterMemberId}`)

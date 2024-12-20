@@ -87,6 +87,66 @@ function cfeTabDef(table) {
 }
 
 /**
+ * Get the metadata for the exhibits sheet.
+ * Defines data about the exhibits sheet that is needed to process the file.
+ * @returns {object} Exhibits Metadata object
+ */
+function getCFEExhibitsMetadata() {
+   const cfeExhibitsMetadata = cfeTabDef("exhibits")
+   return cfeExhibitsMetadata
+}
+
+/**
+ * Get the metadata for the config sheet.
+ * Defines data about the config sheet that is needed to process the file.
+ * @returns {object} Config Metadata object
+ */
+function getCFEConfigMetadata() {
+   const cfeConfigMetadata = cfeTabDef("config")
+   return cfeConfigMetadata
+}
+
+/**
+ * Get the metadata for the app settings sheet.
+ * Defines data about the app settings sheet that is needed to process the file.
+ * @returns {object} App settings metadata object
+ */
+function getCFEAppsettingsMetadata() {
+   const cfeAppsettingsMetadata = cfeTabDef("appsettings")
+   return cfeAppsettingsMetadata
+}
+
+/** 
+ * Get the metadata for the open calls sheet.
+ * Defines data about the open calls sheet that is needed to process the file.
+ * @returns {object} Open Calls Metadata object
+ */
+function getCFEOpenCallsMetadata() {
+   const cfeOpenCallsMetadata = cfeTabDef("opencalls")
+   return cfeOpenCallsMetadata
+}
+
+/** 
+ * Get the metadata for the payments sheet.
+ * Defines data about the payments sheet that is needed to process the file.
+ * @returns {object} Payments Metadata object
+ */
+function getCFEPaymentsMetadata() {
+   const cfePaymentsMetadata = cfeTabDef("payments")
+   return cfePaymentsMetadata
+}
+
+/**
+ * Get the metadata for the payment dashboard sheet.
+ * Defines data about the payment dashboard sheet that is needed to process the file.
+ * @returns {object} Payment Dashboard Metadata object
+ */
+function getCFEPaymentDashboardMetadata() {
+   const cfePaymentDashboardMetadata = cfeTabDef("paymentdashboard")
+   return cfePaymentDashboardMetadata
+}
+
+/**
  * Retrieve a show from the Config tab
  *
  * @param {string} id Unique show identifier
@@ -240,6 +300,11 @@ function getPaymentsDue() {
    return payments
 }
 
+/** 
+ * Get the exhibit entries for a given exhibit id.
+ * @param {string} id Unique exhibit identifier
+ * @returns {object} An array of exhibit entries objects
+ */
 function getExhibitEntriesById(id) {
    // get table definition
    const exhibitTableDef = cfeTabDef("exhibits")
@@ -249,7 +314,7 @@ function getExhibitEntriesById(id) {
    const cfeExhibitEntries = connect(CALLFORENTRIES_ID).getSheetByName(
       exhibitTableDef.name
    )
-   // build schema from header
+   // build schema from table header row
    const exhibitEntriesSchema = buildTableSchema(cfeExhibitEntries, headers)
    const idPos = exhibitEntriesSchema.exhibitid - 1
 

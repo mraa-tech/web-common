@@ -37,6 +37,36 @@ function masterTabDef(table) {
    return tables[table]
 }
 
+/** 
+ * Get the metadata for the member directory sheet.
+ * Defines data about the member directory sheet that is needed to process the file.
+ * @returns {object} Member Directory Metadata object
+*/
+function getMemberMetadata() {
+   const memberMetadata = masterTabDef("memberdirectory")
+   return memberMetadata
+}
+
+/**
+ * Get the metadata for the dues payments sheet.
+ * Defines data about the dues payments sheet that is needed to process the file.
+ * @returns {object} Dues Payments Metadata object
+ */
+function getDuesPaymentsMetadata() {
+   const duesPaymentsMetadata = masterTabDef("duespayments")
+   return duesPaymentsMetadata
+}
+
+/** 
+ * Get the metadata for the board members sheet.
+ * Defines data about the board members sheet that is needed to process the file.
+ * @returns {object} Board Members Metadata object
+ */
+function getBoardMembersMetadata() {
+   const boardMembersMetadata = masterTabDef("boardmembers")
+   return boardMembersMetadata
+}
+
 /**
  * Get the dues payments from the master members spreadsheet
  *

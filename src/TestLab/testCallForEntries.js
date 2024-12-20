@@ -1,3 +1,34 @@
+function testGetCFEMetadata() {
+   const exhibits = getCFEExhibitsMetadata()
+   for (let key in exhibits) {
+      Logger.log(`Exhibits Metadata Schema; ${key}: ${exhibits[key]}`)
+   }
+   const config = getCFEConfigMetadata()
+   for (let key in config) {
+      Logger.log(`CFE Config Metadata Schema; ${key}: ${config[key]}`)
+   }
+   const appsettings = getCFEAppsettingsMetadata()
+   for (let key in appsettings) {
+      Logger.log(
+         `CFE App Settings Metadata Schema; ${key}: ${appsettings[key]}`
+      )
+   }
+   const openCalls = getCFEOpenCallsMetadata()
+   for (let key in openCalls) {
+      Logger.log(`CFE Open Calls Metadata Schema; ${key}: ${openCalls[key]}`)
+   }
+   const payments = getCFEPaymentsMetadata()
+   for (let key in payments) {
+      Logger.log(`CFE Payments Metadata Schema; ${key}: ${payments[key]}`)
+   }
+   const paymentDashboard = getCFEPaymentDashboardMetadata()
+   for (let key in paymentDashboard) {
+      Logger.log(
+         `CFE Payment Dashboard Metadata Schema; ${key}: ${paymentDashboard[key]}`
+      )
+   }
+}
+
 function testGetExhibitEntriesById() {
    const entries = getExhibitEntriesById("176BD2A")
 
@@ -47,4 +78,5 @@ function testCFERunAll() {
    testGetExhibitEntriesById()
    testGetOpenCalls()
    testGetPaymentsDue()
+   testGetCFEMetadata()
 }
