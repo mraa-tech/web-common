@@ -33,15 +33,25 @@ function masterTabDef(table) {
          type: "pivot",
          headers: 1,
       },
+      security: {
+         name: "Security",
+         type: "dashboard",
+         headers: 1,
+      },
    }
    return tables[table]
 }
 
-/** 
+function getSecurityMetadata() {
+   const securityMetadata = masterTabDef("security")
+   return securityMetadata
+}
+
+/**
  * Get the metadata for the member directory sheet.
  * Defines data about the member directory sheet that is needed to process the file.
  * @returns {object} Member Directory Metadata object
-*/
+ */
 function getMemberMetadata() {
    const memberMetadata = masterTabDef("memberdirectory")
    return memberMetadata
@@ -57,7 +67,7 @@ function getDuesPaymentsMetadata() {
    return duesPaymentsMetadata
 }
 
-/** 
+/**
  * Get the metadata for the board members sheet.
  * Defines data about the board members sheet that is needed to process the file.
  * @returns {object} Board Members Metadata object
@@ -238,6 +248,16 @@ function getBoardMembers() {
 }
 
 /**
+ * Validates the email address of the member.
+ * @param {string} email
+ * @returns boollean
+ */
+function isMember(email) {
+   const member = getMemberByEmail(email)
+   return member !== undefined
+}
+
+/**
  * Returns true if the member is active, false otherwise
  *
  * @param {string} email
@@ -259,4 +279,157 @@ function isMemberExhibitor(email) {
    const member = getMemberByEmail(email)
 
    return member.membership.toLowerCase() === "exhibiting"
+}
+
+/**
+ * Checks if the member has a token in the security table.
+ * Returns the token if it exists, otherwise returns null.
+ *
+ * @param {string} email
+ * @returns string | null
+ */
+function doesMemberHaveToken(email) {
+   const securityTableDef = masterTabDef("security")
+   const securityTable = connect(MASTERMEMBER_ID).getSheetByName(
+      securityTableDef.name
+   )
+   const securitySchema = buildTableSchema(
+      securityTable,
+      securityTableDef.headers
+   )
+   const pkey = securitySchema.email - 1 // 0-based index
+   const startRow = securityTableDef.headers + 1
+   const startCol = 1
+   const endRow = securityTable.getLastRow()
+   const endCol = securityTable.getLastColumn()
+   const securityData = securityTable.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+   const member = securityData.filter(
+      (m) => m[pkey].toLowerCase() === email.toLowerCase()
+   )[0]
+
+   return member !== undefined ? member[securitySchema.token - 1] : null
+}
+
+/**
+ * Get the security token for the member.
+ * Returns the member's security record with token.
+ * The row number of the security record where the token is stored is returned in the schema.
+ * The row number is used to update the token if it has expired.
+ *
+ * @param {string} email
+ * @returns object
+ */
+function getMemberSecurityToken(email) {
+   const securityTableDef = masterTabDef("security")
+   const securityTable = connect(MASTERMEMBER_ID).getSheetByName(
+      securityTableDef.name
+   )
+   const securitySchema = buildTableSchema(
+      securityTable,
+      securityTableDef.headers
+   )
+   securitySchema.row = Object.keys(securitySchema).length + 1 // add row number to schema
+
+   const pkey = securitySchema.email - 1 // 0-based index
+   const startRow = securityTableDef.headers + 1
+   const startCol = 1
+   const endRow = securityTable.getLastRow()
+   const endCol = securityTable.getLastColumn()
+   const securityData = securityTable.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+   const member = securityData.filter(function (m, i) {
+      if (m[pkey].toLowerCase() === email.toLowerCase()) {
+         m.push(i + 1 + securityTableDef.headers) // add row number to array, 1-based index, plus header row
+         return m
+      }
+   })
+
+   const m = {}
+   if (member !== undefined && member.length > 0) {
+      /**
+       * Convert the array of data to an object
+       */
+      for (let key in securitySchema) {
+         let col = securitySchema[key] - 1 // convert to zero-based index
+         m[key] = member[0][col]
+      }
+   }
+   return m
+}
+
+/**
+ * Adds a security token for the member requested to the security table.
+ * Token expiration is hard-coded to 7 days.
+ *
+ * @param {string} email
+ * @returns void
+ */
+function addSecurityToken(email) {
+   const securityTableDef = masterTabDef("security")
+   const conn = connect(MASTERMEMBER_ID)
+   const securityTable = conn.getSheetByName(securityTableDef.name)
+   const securitySchema = buildTableSchema(
+      securityTable,
+      securityTableDef.headers
+   )
+   const startRow = securityTable.getLastRow() + 1
+   const startCol = 1
+   const endCol = securityTable.getLastColumn()
+   const now = new Date()
+   // TODO - make token expiration configurable
+   const tokenExpiry = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7) // 7 days
+   const securityData = [
+      email,
+      generateToken(),
+      tokenExpiry.toLocaleDateString(),
+   ]
+
+   securityTable
+      .getRange(startRow, startCol, 1, endCol)
+      .setValues([securityData])
+
+   return
+}
+
+/**
+ * Generates a new token and resets the expiration date.
+ *
+ * @param {object} member
+ * @returns {array} range of data updated
+ */
+function renewSecurityToken(member) {
+   const securityTableDef = masterTabDef("security")
+   const conn = connect(MASTERMEMBER_ID)
+   const securityTable = conn.getSheetByName(securityTableDef.name)
+   const securitySchema = buildTableSchema(
+      securityTable,
+      securityTableDef.headers
+   )
+   const pkey = securitySchema.email - 1 // 0-based index
+   const token = generateToken()
+   const now = new Date()
+   const tokenExpiry = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7) // 7 days
+   const startRow = member.row
+   const startCol = 1
+   const endRow = 1
+   const endCol = securityTable.getLastColumn()
+   const securityData = [
+      member.email,
+      generateToken(),
+      tokenExpiry.toLocaleDateString(),
+   ]
+   securityTable
+      .getRange(startRow, startCol, 1, endCol)
+      .setValues([securityData])
+
+   return securityData
 }
