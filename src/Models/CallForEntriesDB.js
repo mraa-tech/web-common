@@ -36,6 +36,13 @@ function cfeTabDef(table) {
          type: "standard",
          headers: 1,
       },
+      totalsbyexhibitname: {
+         name: "Totals By Exhibit Name",
+         type: "pivot",
+         headers: 1,
+         summary: 1,
+      },
+
       paymentdashboard: {
          name: "Payment Dashboard",
          type: "dashboard",
@@ -86,6 +93,30 @@ function cfeTabDef(table) {
    return tables[table]
 }
 
+function getTotalsByExhibitName() {
+   const cfeTotalsByExhibitNameTableDef = cfeTabDef("totalsbyexhibitname")
+   const headers = cfeTotalsByExhibitNameTableDef.headers
+   const cfeTotalsByExhibitName = connect(CALLFORENTRIES_ID).getSheetByName(
+      cfeTotalsByExhibitNameTableDef.name
+   )
+   const cfeTotalsByExhibitNameSchema = buildTableSchema(
+      cfeTotalsByExhibitName,
+      headers
+   )
+   const startRow = headers + 1
+   const startCol = 1
+   const endRow = cfeTotalsByExhibitName.getLastRow() - 1
+   const endCol = cfeTotalsByExhibitName.getLastColumn()
+   const cfeTotalsByExhibitNameData = cfeTotalsByExhibitName.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+
+   return cfeTotalsByExhibitNameData
+}
+
 /**
  * Get the metadata for the exhibits sheet.
  * Defines data about the exhibits sheet that is needed to process the file.
@@ -116,7 +147,7 @@ function getCFEAppsettingsMetadata() {
    return cfeAppsettingsMetadata
 }
 
-/** 
+/**
  * Get the metadata for the open calls sheet.
  * Defines data about the open calls sheet that is needed to process the file.
  * @returns {object} Open Calls Metadata object
@@ -126,7 +157,7 @@ function getCFEOpenCallsMetadata() {
    return cfeOpenCallsMetadata
 }
 
-/** 
+/**
  * Get the metadata for the payments sheet.
  * Defines data about the payments sheet that is needed to process the file.
  * @returns {object} Payments Metadata object
@@ -144,6 +175,44 @@ function getCFEPaymentsMetadata() {
 function getCFEPaymentDashboardMetadata() {
    const cfePaymentDashboardMetadata = cfeTabDef("paymentdashboard")
    return cfePaymentDashboardMetadata
+}
+
+/**
+ * CFE (call for entries) PD (payment dashboard) pivot table schema
+ * @param {string} pt Name of the pivot table
+ * @returns {object} Pivot table schema
+ */
+function getCFEPDPivotTablesSchema(pt = "exhibittotals") {
+   const cfePaymentDashboardMetadata = getCFEPaymentDashboardMetadata()
+   return cfePaymentDashboardMetadata.pivottables[pt]
+}
+
+function getCFEPDPivotTablesData(pt = "exhibittotals") {
+   const cfePaymentDashboardMetadata = getCFEPaymentDashboardMetadata()
+   const cfePaymentDashboardSchema = getCFEPDPivotTablesSchema(pt)
+   const cfePaymentDashboardTable = connect(CALLFORENTRIES_ID).getSheetByName(
+      cfePaymentDashboardMetadata.name
+   )
+   const startRow = cfePaymentDashboardSchema.headers // includes column headers
+   const startCol = cfePaymentDashboardSchema.schema.exhibitname.colToIndex()
+   const endRow = cfePaymentDashboardTable.getLastRow() - startRow + 1
+   const endCol = cfePaymentDashboardSchema.schema.amountpaid.colToIndex()
+   const cfePaymentDashboardData = cfePaymentDashboardTable.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+   let cfePDDataArr = []
+   for (let i = 0; i < cfePaymentDashboardData.length; i++) {
+      let row = []
+      for (let j = 0; j < cfePaymentDashboardData[i].length; j++) {
+         row.push(cfePaymentDashboardData[i][j])
+      }
+      cfePDDataArr.push(row)
+   }
+
+   return cfePDDataArr
 }
 
 /**
