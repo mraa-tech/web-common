@@ -1,3 +1,31 @@
+function testGetTotalsByExhibitName() {
+   const payments = getTotalsByExhibitName()
+   for (let key in payments) {
+      Logger.log(`Totals By Exhibit Name; ${key}: ${payments[key]}`)
+   }
+}
+
+function testGetCFEPDPivotTablesData() {
+   const payments = getCFEPDPivotTablesData("totalsbyexhibitname")
+   for (let key in payments) {
+      Logger.log(`CFE Payment Dashboard Metadata; ${key}: ${payments[key]}`)
+   }
+}
+
+function testGetCFEPDPivotTablesSchema() {
+   const payments = getCFEPDPivotTablesSchema("totalsbyexhibitname")
+   for (let key in payments) {
+      Logger.log(
+         `CFE Payment Dashboard Metadata Schema; ${key}: ${payments[key]}`
+      )
+   }
+   for (let key in payments.schema) {
+      Logger.log(
+         `CFE Payment Dashboard Pivot Tables Schema; ${key}: ${payments.schema[key]}`
+      )
+   }
+}
+
 function testGetCFEMetadata() {
    const exhibits = getCFEExhibitsMetadata()
    for (let key in exhibits) {
@@ -24,7 +52,12 @@ function testGetCFEMetadata() {
    const paymentDashboard = getCFEPaymentDashboardMetadata()
    for (let key in paymentDashboard) {
       Logger.log(
-         `CFE Payment Dashboard Metadata Schema; ${key}: ${paymentDashboard[key]}`
+         `CFE Payment Dashboard Metadata; ${key}: ${paymentDashboard[key]}`
+      )
+   }
+   for (let key in paymentDashboard.schema) {
+      Logger.log(
+         `CFE Payment Dashboard Metadata Schema; ${key}: ${paymentDashboard.schema[key]}`
       )
    }
 }
