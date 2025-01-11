@@ -74,6 +74,7 @@ function cfeTabDef(table) {
                },
             },
             totalsbyexhibitname: {
+               // this has been moved to it's own table in sheets. validate it is no longer needed here before removing this
                name: "Exhibit Totals By Exhibit Name",
                type: "pivot",
                headers: 2,
@@ -93,6 +94,11 @@ function cfeTabDef(table) {
    return tables[table]
 }
 
+/**
+ * Totals by exhibit name is a pivot table that summarizes the total entries and total paid for each exhibit by artist.
+ * 
+ * @returns {array} An array of exhibit entries
+ */
 function getTotalsByExhibitName() {
    const cfeTotalsByExhibitNameTableDef = cfeTabDef("totalsbyexhibitname")
    const headers = cfeTotalsByExhibitNameTableDef.headers
@@ -187,6 +193,12 @@ function getCFEPDPivotTablesSchema(pt = "exhibittotals") {
    return cfePaymentDashboardMetadata.pivottables[pt]
 }
 
+/**
+ * Read the pivot table data from the Payment Dashboard sheet in the Call for Entries spreadsheet.
+ * 
+ * @param {string} pt name of the pivot table to retrive data from
+ * @returns {array} An array of pivot table data
+ */
 function getCFEPDPivotTablesData(pt = "exhibittotals") {
    const cfePaymentDashboardMetadata = getCFEPaymentDashboardMetadata()
    const cfePaymentDashboardSchema = getCFEPDPivotTablesSchema(pt)

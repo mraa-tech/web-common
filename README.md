@@ -13,6 +13,8 @@ It is deployed as a library to the Google Apps Script environment.
 -  `Member Master.Board Members`
 -  `Call For Entries.Exhibits`
 -  `Call For Entries.Payments`
+-  `Call For Entries.Payments Dashboard`
+-  `Call For Entries.Total By Exhibit Name`
 -  `Call For Entries.Config`
 -  `Call For Entries.AppSettins`
 -  `Call For Entries.Open Calls`
@@ -186,6 +188,14 @@ It is deployed as a library to the Google Apps Script environment.
 -  maxxentriesperartist {number}
 -  entryfee {number}
 -  imagefolderid {string}
+
+### call for entries.total by exhibit name
+
+-  exhibittitle {string}
+-  artistlastname {string}
+-  artistfirstname {string}
+-  quantityentered {number}
+-  amountpaid {number}
 
 ## Usage
 
