@@ -73,6 +73,10 @@ img {
     flex: 1 0 auto;
 }
 
+.dashboard .row {
+	 margin-bottom: 20px;
+}
+
 .dashboard-counter {
     border-width: 5px;
     border-style: solid;
