@@ -31,7 +31,7 @@ function masterTabDef(table) {
       boardmembers: {
          name: "Board Members",
          type: "pivot",
-         headers: 1,
+         headers: 2,
       },
       security: {
          name: "Security",
@@ -218,17 +218,17 @@ function getBoardMembers() {
       boardMembersTable,
       boardMembersTableDef.headers
    )
-
-   const startRow = boardMembersTableDef.headers + 1
-   const endRow = boardMembersTable.getLastRow() - 1
+   const headers = boardMembersTableDef.headers
+   const startRow = headers + 1
+   const numRows = boardMembersTable.getLastRow() - headers // skip the header rows
    const startCol = 1
-   const endCol = boardMembersTable.getLastColumn()
+   const numCols = boardMembersTable.getLastColumn()
 
    const boardMembersData = boardMembersTable.getSheetValues(
       startRow,
       startCol,
-      endRow,
-      endCol
+      numRows,
+      numCols
    )
 
    /**
@@ -236,7 +236,7 @@ function getBoardMembers() {
     * The boardMembersData variable is an array of arrays.
     */
    let boardMembers = []
-   for (let row = 0; row < endRow; row++) {
+   for (let row = 0; row < numRows; row++) {
       let boardMember = {}
       for (let key in boardMembersSchema) {
          let fldPos = boardMembersSchema[key] - 1 // zero based index
@@ -245,6 +245,11 @@ function getBoardMembers() {
       boardMembers.push(boardMember)
    }
    return boardMembers
+}
+
+function getBoardMember(email) {
+   const boardMembers = getBoardMembers()
+   return boardMembers.filter((m) => m.email === email)
 }
 
 /**
@@ -279,6 +284,11 @@ function isMemberExhibitor(email) {
    const member = getMemberByEmail(email)
 
    return member.membership.toLowerCase() === "exhibiting"
+}
+
+function isBoardMember(email) {
+   const boardMembers = getBoardMembers()
+   return boardMembers.some((m) => m.email === email)
 }
 
 /**

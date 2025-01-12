@@ -1,3 +1,26 @@
+function testIsBoardMember() {
+   const email = "jamesgreen.311@gmail.com"
+   const bm = isBoardMember(email)
+   Logger.log(bm)
+
+   if (bm) {
+      const boardMember = getBoardMember(email)
+      Logger.log(boardMember)
+   } else {
+      Logger.log("Not a board member")
+   }
+}
+
+function testGetBoardMembers() {
+   const boardMembers = getBoardMembers()
+   if (!isEmptyObject(boardMembers)) {
+      for (let i = 0; i < boardMembers.length; i++) {
+         Logger.log(boardMembers[i].boardrole)
+      }
+   }
+   Logger.log(boardMembers)
+}
+
 function testGetMemberSecurityToken() {
    const email = "jamesgreen.311@gmail.com"
    const member = getMemberSecurityToken(email)
@@ -51,16 +74,6 @@ function testGetMemberByEmail() {
          `Is member an Exhibitor? ${isMemberExhibitor(email) ? "yes" : "no"}`
       )
    }
-}
-
-function testGetBoardMembers() {
-   const boardMembers = getBoardMembers()
-   if (!isEmptyObject(boardMembers)) {
-      for (let i = 0; i < boardMembers.length; i++) {
-         Logger.log(boardMembers[i].boardrole)
-      }
-   }
-   Logger.log(boardMembers)
 }
 
 function testMemberRunAll() {
