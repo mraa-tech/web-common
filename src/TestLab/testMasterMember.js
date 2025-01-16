@@ -1,3 +1,8 @@
+function testDoesMemberHaveToken() {
+   const result = doesMemberHaveToken("jamesgreen.311@gmail.com")
+   Logger.log(result)
+}
+
 function testIsBoardMember() {
    const email = "jamesgreen.311@gmail.com"
    const bm = isBoardMember(email)
