@@ -38,6 +38,49 @@ function masterTabDef(table) {
          type: "dashboard",
          headers: 1,
       },
+      memberservices: {
+         name: "Member Services Dashboard",
+         type: "dashboard",
+         headers: 1,
+         pivottables: [
+            {
+               key: "counts",
+               name: "Counts",
+               headers: 2,
+               headerrow: 2,
+               datarange: {
+                  startrow: 3,
+                  startcol: 2,
+                  numrow: 1, // number of rows to include
+                  numcol: 4, // number of columns to include
+               },
+            },
+            {
+               key: "status",
+               name: "All Active Email List",
+               headers: 2,
+               headerrow: 2,
+               datarange: {
+                  startrow: 2, // include the header row
+                  startcol: 6,
+                  numrow: -1, // -1 means to the last row, but could include blanks
+                  numcol: 4,
+               },
+            },
+            {
+               key: "membership",
+               name: "All Active Exhibiting Email List",
+               headers: 2,
+               headerrow: 2,
+               datarange: {
+                  startrow: 2, // include the header row
+                  startcol: 11,
+                  numrow: -1, // -1 means to the last row, but could include blanks
+                  numcol: 5,
+               },
+            },
+         ],
+      },
    }
    return tables[table]
 }
@@ -442,4 +485,49 @@ function renewSecurityToken(member) {
       .setValues([securityData])
 
    return securityData
+}
+
+function getMembersEmailList(key = "membership") {
+   const memberServicesTablesDef = masterTabDef("memberservices")
+   const conn = connect(MASTERMEMBER_ID)
+   const membersServicesTable = conn.getSheetByName(
+      memberServicesTablesDef.name
+   )
+   const pt = {
+      count: 0,
+      status: 1,
+      membership: 2,
+   }
+   const ptKey = pt[key]
+   // Member Services Table is a dashboard and contains one to many pivot tables
+   const msPivotTables = memberServicesTablesDef.pivottables // array of pivot tables
+   const msptTable = msPivotTables[ptKey]
+
+   // const msptCounts = msPivotTables[0] // the counts pivot table, not used for email list
+   // const msptAllActive = msPivotTables[1] // the all active members pivot table
+   // const msptAllActiveExhibiting = msPivotTables[2] // the all active exhbiting members pivot table
+
+   const headers = msptTable.headers
+   const headerRow = msptTable.headerrow
+   const headerVals = membersServicesTable.getSheetValues(
+      headerRow,
+      msptTable.datarange.startcol,
+      1,
+      msptTable.datarange.numcol
+   )
+
+   const lastRow = membersServicesTable.getLastRow() - headers
+   const msptTableData = membersServicesTable.getSheetValues(
+      msptTable.datarange.startrow,
+      msptTable.datarange.startcol,
+      lastRow,
+      msptTable.datarange.numcol
+   )
+
+   // Filter out rows where all values are empty or null
+   const data = msptTableData.filter((row) =>
+      row.some((cell) => cell !== "" && cell != null)
+   )
+
+   return data
 }
