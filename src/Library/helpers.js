@@ -1,6 +1,8 @@
 /** helperColToIndex(char)
  * Convert a spreadsheet column letter into an array index.
- *
+ * @usage
+ * var index = "A".colToIndex() => 0
+ * 
  * Note: does not currently support double letter columns. Supports only A - Z columns
  *
  * @param {char} col
@@ -22,7 +24,3 @@ function helperColToIndex(col) {
    return colToAscii - indexOffset
 }
 String.prototype.colToIndex = helperColToIndex
-
-function isEmptyObject(obj) {
-   return Object.keys(obj).length === 0
-}

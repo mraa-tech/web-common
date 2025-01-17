@@ -1,3 +1,52 @@
+function testDoesMemberHaveToken() {
+   const result = doesMemberHaveToken("jamesgreen.311@gmail.com")
+   Logger.log(result)
+}
+
+function testIsBoardMember() {
+   const email = "jamesgreen.311@gmail.com"
+   const bm = isBoardMember(email)
+   Logger.log(bm)
+
+   if (bm) {
+      const boardMember = getBoardMember(email)
+      Logger.log(boardMember)
+   } else {
+      Logger.log("Not a board member")
+   }
+}
+
+function testGetBoardMembers() {
+   const boardMembers = getBoardMembers()
+   if (!isEmptyObject(boardMembers)) {
+      for (let i = 0; i < boardMembers.length; i++) {
+         Logger.log(boardMembers[i].boardrole)
+      }
+   }
+   Logger.log(boardMembers)
+}
+
+function testGetMemberSecurityToken() {
+   const email = "jamesgreen.311@gmail.com"
+   const member = getMemberSecurityToken(email)
+   Logger.log(isEmptyObject(member) ? "Member not found" : member.token)
+   Logger.log(
+      isEmptyObject(member)
+         ? addSecurityToken(email)
+         : renewSecurityToken(member)
+   )
+}
+
+function testDoesMemberHaveToken() {
+   const token = doesMemberHaveToken("jamesgreen.311@gmail.com")
+   Logger.log(token)
+}
+
+function testIsMember() {
+   const member = getMemberByEmail("jamesgreen.311@gmail.com")
+   Logger.log(isEmptyObject(member) ? "No member found" : member)
+}
+
 function testGetDuesPayments() {
    const duesPayments = getDuesPayments()
    const data = duesPayments.data
@@ -16,31 +65,20 @@ function testGetDuesPayments() {
 }
 
 function testGetMemberByEmail() {
-   const member = getMemberByEmail("jamesgreen.311@gmail.com")
+   const email = "jamesgreen.311@gmail.com"
+   const member = getMemberByEmail(email)
    Logger.log(isEmptyObject(member) ? "No member found" : member)
 
    if (!isEmptyObject(member)) {
       Logger.log(
          `Is status active for ${member.firstname} ${member.lastname}? ${
-            isMemberActive("jamesgreen.311@gmail.com") ? "yes" : "no"
+            isMemberActive(email) ? "yes" : "no"
          }`
       )
       Logger.log(
-         `Is member an Exhibitor? ${
-            isMemberExhibitor("jamesgreen.311@gmail.com") ? "yes" : "no"
-         }`
+         `Is member an Exhibitor? ${isMemberExhibitor(email) ? "yes" : "no"}`
       )
    }
-}
-
-function testGetBoardMembers() {
-   const boardMembers = getBoardMembers()
-   if (!isEmptyObject(boardMembers)) {
-      for (let i = 0; i < boardMembers.length; i++) {
-         Logger.log(boardMembers[i].boardrole)
-      }
-   }
-   Logger.log(boardMembers)
 }
 
 function testMemberRunAll() {
