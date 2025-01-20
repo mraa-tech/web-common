@@ -1,3 +1,27 @@
+function testIsMemberExhibitor() {
+   const goodEmail = "jamesgreen.311@gmail.com"
+   const badEmail = "jamesgreen@gmail.com"
+
+   const exhibitor = isMember(badEmail) && isMemberExhibitor(badEmail)
+   Logger.log(exhibitor)
+}
+
+function testIsMemberActive() {
+   const goodEmail = "jamesgreen.311@gmail.com"
+   const badEmail = "jamesgreen@gmail.com"
+
+   const active = isMember(badEmail) && isMemberActive(badEmail)
+   Logger.log(active)
+}
+
+function testIsMember() {
+   const goodEmail = "jamesgreen.311@gmail.com"
+   const badEmail = "jamesgreen@gmail.com"
+
+   const member = isMember(badEmail)
+   Logger.log(member)
+}
+
 function testDoesMemberHaveToken() {
    const result = doesMemberHaveToken("jamesgreen.311@gmail.com")
    Logger.log(result)
@@ -40,11 +64,6 @@ function testGetMemberSecurityToken() {
 function testDoesMemberHaveToken() {
    const token = doesMemberHaveToken("jamesgreen.311@gmail.com")
    Logger.log(token)
-}
-
-function testIsMember() {
-   const member = getMemberByEmail("jamesgreen.311@gmail.com")
-   Logger.log(isEmptyObject(member) ? "No member found" : member)
 }
 
 function testGetDuesPayments() {

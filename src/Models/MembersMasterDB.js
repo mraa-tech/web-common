@@ -85,6 +85,11 @@ function masterTabDef(table) {
    return tables[table]
 }
 
+/** 
+ * Get the metadata for the security sheet.
+ * Defines data about the security sheet that is needed to process the file.
+ * @returns {object} Security Metadata object
+ */
 function getSecurityMetadata() {
    const securityMetadata = masterTabDef("security")
    return securityMetadata
@@ -302,7 +307,7 @@ function getBoardMember(email) {
  */
 function isMember(email) {
    const member = getMemberByEmail(email)
-   return member !== undefined
+   return !isEmptyObject(member) ? true : false
 }
 
 /**
@@ -313,8 +318,11 @@ function isMember(email) {
  */
 function isMemberActive(email) {
    const member = getMemberByEmail(email)
-
-   return member.status.toLowerCase() === "active"
+   if (isEmptyObject(member)) {
+      return false
+   } else {
+      return member.status.toLowerCase() === "active"
+   }
 }
 
 /**
@@ -325,10 +333,18 @@ function isMemberActive(email) {
  */
 function isMemberExhibitor(email) {
    const member = getMemberByEmail(email)
-
-   return member.membership.toLowerCase() === "exhibiting"
+   if (isEmptyObject(member)) {
+      return false
+   } else {
+      return member.membership.toLowerCase() === "exhibiting"
+   }
 }
 
+/**
+ * Returns true if the member is a board member, false otherwise
+ * @params {string} email
+ * @returns boolean
+ */
 function isBoardMember(email) {
    const boardMembers = getBoardMembers()
    return boardMembers.some((m) => m.email === email)
@@ -366,6 +382,19 @@ function doesMemberHaveToken(email) {
    )[0]
 
    return member !== undefined ? member[securitySchema.token - 1] : null
+}
+
+/**
+ * Checks if the member has a valid token.
+ * Returns true if the token is valid, false otherwise.
+ *
+ * @param {string} email
+ * @param {string} token2
+ * @returns boolean
+ */
+function doesMemberHaveValidToken(email, token2) {
+   const token1 = doesMemberHaveToken(email)
+   return token1 !== null && token1 === token2
 }
 
 /**
@@ -438,7 +467,7 @@ function addSecurityToken(email) {
    const startCol = 1
    const endCol = securityTable.getLastColumn()
    const now = new Date()
-   // TODO - make token expiration configurable
+   // TODO - make days to expiration configurable
    const tokenExpiry = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7) // 7 days
    const securityData = [
       email,
@@ -470,23 +499,35 @@ function renewSecurityToken(member) {
    const pkey = securitySchema.email - 1 // 0-based index
    const token = generateToken()
    const now = new Date()
+   // TODO - make days to expiration configurable
    const tokenExpiry = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7) // 7 days
    const startRow = member.row
    const startCol = 1
-   const endRow = 1
-   const endCol = securityTable.getLastColumn()
+   const numRow = 1
+   const numCol = securityTable.getLastColumn()
+
    const securityData = [
       member.email,
+      "member email",
       generateToken(),
       tokenExpiry.toLocaleDateString(),
    ]
    securityTable
-      .getRange(startRow, startCol, 1, endCol)
+      .getRange(startRow, startCol, numRow, numCol)
       .setValues([securityData])
 
    return securityData
 }
 
+/**
+ * Get an members email addresses from the member services pivot table. The key is the pivot table name. Valid keys are:
+ * count,
+ * status,
+ * membership
+ * 
+ * @param {string} key 
+ * @returns {array} 
+ */
 function getMembersEmailList(key = "membership") {
    const memberServicesTablesDef = masterTabDef("memberservices")
    const conn = connect(MASTERMEMBER_ID)
@@ -502,10 +543,6 @@ function getMembersEmailList(key = "membership") {
    // Member Services Table is a dashboard and contains one to many pivot tables
    const msPivotTables = memberServicesTablesDef.pivottables // array of pivot tables
    const msptTable = msPivotTables[ptKey]
-
-   // const msptCounts = msPivotTables[0] // the counts pivot table, not used for email list
-   // const msptAllActive = msPivotTables[1] // the all active members pivot table
-   // const msptAllActiveExhibiting = msPivotTables[2] // the all active exhbiting members pivot table
 
    const headers = msptTable.headers
    const headerRow = msptTable.headerrow
@@ -530,4 +567,47 @@ function getMembersEmailList(key = "membership") {
    )
 
    return data
+}
+
+/**
+ * Determines if the security token has expired.
+ *
+ * @param {string} email
+ * @returns boolean
+ */
+function hasSecurityTokenExpired(email) {
+   const securityTableDef = masterTabDef("security")
+   const conn = connect(MASTERMEMBER_ID)
+   const securityTable = conn.getSheetByName(securityTableDef.name)
+   const securitySchema = buildTableSchema(
+      securityTable,
+      securityTableDef.headers
+   )
+   const pkey = securitySchema.email - 1 // 0-based index
+   const expireson = securitySchema.expireson - 1 // 0-based index
+   const headers = securityTableDef.headers + 1
+   const startRow = headers
+   const startCol = 1
+
+   const numRow = securityTable.getLastRow() - headers
+   const numCol = securityTable.getLastColumn()
+   const securityData = securityTable.getSheetValues(
+      startRow,
+      startCol,
+      numRow,
+      numCol
+   )
+   let hasExpired = true // assume expired
+
+   const boardMember = isBoardMember(email)
+   if (boardMember) {
+      const member = securityData.filter(
+         (m) => m[pkey].toLowerCase() === email.toLowerCase()
+      )[0]
+      const tokenExpiry = new Date(member[expireson])
+      const now = new Date()
+      hasExpired = tokenExpiry < now
+   }
+
+   return hasExpired
 }
