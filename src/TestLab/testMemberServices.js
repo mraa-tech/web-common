@@ -1,3 +1,12 @@
+function testAddSecurityToken() {
+   const bm = getBoardMembers()
+
+   bm.forEach((bm) => {
+      const token = addSecurityToken(bm.email)
+      Logger.log("Token Created: %s", token)
+   })
+}
+
 function testHasSecurityTokenExpired() {
    const testData = {
       expiredboardmemberemail: "dorrzeigler@gmail.com",
@@ -68,16 +77,6 @@ function testSecureAccess() {
       "Test 6: invalidMemberInvalidToken, expect false: %s",
       !invalidMemberInvalidToken ? "pass" : "fail"
    )
-
-   // const member = isMember(testData.goodmemberemail)
-   // const hasvalidtoken = doesMemberHaveToken(testData.goodmemberemail)
-   // const hasinvalidtoken = doesMemberHaveToken(testData.badtoken)
-   // const hasvalidtokenforbadmember = doesMemberHaveToken(
-   //    testData
-   //    .badmemberemail)
-
-   // const result = validateAccess(testData)
-   // Logger.log(result)
 }
 
 function testGetMembersEmailList() {
