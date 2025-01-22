@@ -465,21 +465,24 @@ function addSecurityToken(email) {
    )
    const startRow = securityTable.getLastRow() + 1
    const startCol = 1
-   const endCol = securityTable.getLastColumn()
+   const numRow = 1
+   const numCol = securityTable.getLastColumn()
    const now = new Date()
    // TODO - make days to expiration configurable
    const tokenExpiry = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7) // 7 days
+   const newToken = generateToken()
    const securityData = [
       email,
-      generateToken(),
+      "member email",
+      newToken,
       tokenExpiry.toLocaleDateString(),
    ]
 
    securityTable
-      .getRange(startRow, startCol, 1, endCol)
+      .getRange(startRow, startCol, numRow, numCol)
       .setValues([securityData])
 
-   return
+   return securityData
 }
 
 /**
@@ -553,11 +556,11 @@ function getMembersEmailList(key = "membership") {
       msptTable.datarange.numcol
    )
 
-   const lastRow = membersServicesTable.getLastRow() - headers
+   const numRow = membersServicesTable.getLastRow() - headers + 1
    const msptTableData = membersServicesTable.getSheetValues(
       msptTable.datarange.startrow,
       msptTable.datarange.startcol,
-      lastRow,
+      numRow,
       msptTable.datarange.numcol
    )
 
