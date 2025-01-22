@@ -556,11 +556,11 @@ function getMembersEmailList(key = "membership") {
       msptTable.datarange.numcol
    )
 
-   const lastRow = membersServicesTable.getLastRow() - headers
+   const numRow = membersServicesTable.getLastRow() - headers + 1
    const msptTableData = membersServicesTable.getSheetValues(
       msptTable.datarange.startrow,
       msptTable.datarange.startcol,
-      lastRow,
+      numRow,
       msptTable.datarange.numcol
    )
 
