@@ -1,5 +1,6 @@
 function testIsMemberExhibitor() {
    const goodEmail = "jamesgreen.311@gmail.com"
+   const caseSensitiveEmail = "Jamesgreen.311@gmail.com"
    const badEmail = "jamesgreen@gmail.com"
 
    const exhibitor = isMember(badEmail) && isMemberExhibitor(badEmail)
