@@ -295,9 +295,16 @@ function getBoardMembers() {
    return boardMembers
 }
 
+/**
+ * Retrieve a board member from the Master Member spreadsheet pivot table.
+ * @param {string} email
+ * @returns array of selected board member, or an empty array if the member is not found
+ */
 function getBoardMember(email) {
    const boardMembers = getBoardMembers()
-   return boardMembers.filter((m) => m.email === email)
+   return boardMembers.filter(
+      (m) => m.email.toLowerCase() === email.toLowerCase()
+   )
 }
 
 /**
@@ -347,7 +354,9 @@ function isMemberExhibitor(email) {
  */
 function isBoardMember(email) {
    const boardMembers = getBoardMembers()
-   return boardMembers.some((m) => m.email === email)
+   return boardMembers.some(
+      (m) => m.email.toLowerCase() === email.toLowerCase()
+   )
 }
 
 /**

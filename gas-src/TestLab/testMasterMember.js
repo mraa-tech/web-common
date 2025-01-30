@@ -1,46 +1,148 @@
 function testIsMemberExhibitor() {
-   const goodEmail = "jamesgreen.311@gmail.com"
-   const badEmail = "jamesgreen@gmail.com"
+   const testData = [
+      {
+         testName: "Exhibitor with Good Email Address",
+         email: "jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+      {
+         testName: "Exhibitor with Bad Email Address",
+         email: "jimgreen.311@gmail.com",
+         expectedResult: false,
+      },
+      {
+         testName: "Exhibitor with Case Sensitive Email Address",
+         email: "Jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+   ]
 
-   const exhibitor = isMember(badEmail) && isMemberExhibitor(badEmail)
-   Logger.log(exhibitor)
+   for (r in testData) {
+      const test = testData[r]
+      const result = isMember(test.email) && isMemberExhibitor(test.email)
+      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
+   }
 }
 
 function testIsMemberActive() {
-   const goodEmail = "jamesgreen.311@gmail.com"
-   const badEmail = "jamesgreen@gmail.com"
+   const testData = [
+      {
+         testName: "Active Member with Good Email Address",
+         email: "jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+      {
+         testName: "Active Member with Bad Email Address",
+         email: "jimgreen.311@gmail.com",
+         expectedResult: false,
+      },
+      {
+         testName: "Active Member with Case Sensitive Email Address",
+         email: "Jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+   ]
 
-   const active = isMember(badEmail) && isMemberActive(badEmail)
-   Logger.log(active)
+   for (r in testData) {
+      const test = testData[r]
+      const result = isMember(test.email) && isMemberActive(test.email)
+      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
+   }
 }
 
 function testIsMember() {
-   const goodEmail = "jamesgreen.311@gmail.com"
-   const badEmail = "jamesgreen@gmail.com"
-
-   const member = isMember(badEmail)
-   Logger.log(member)
+   const testData = [
+      {
+         testName: "Member with Good Email Address",
+         email: "jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+      {
+         testName: "Member with Bad Email Address",
+         email: "jimgreen.311@gmail.com",
+         expectedResult: false,
+      },
+      {
+         testName: "Member with Case Sensitive Email Address",
+         email: "Jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+   ]
+   for (r in testData) {
+      const test = testData[r]
+      const result = isMember(test.email)
+      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
+   }
 }
 
 function testDoesMemberHaveToken() {
-   const result = doesMemberHaveToken("jamesgreen.311@gmail.com")
-   Logger.log(result)
+   const testData = [
+      {
+         testName: "Member with Good Email Address",
+         email: "jamesgreen.311@gmail.com",
+         expectedResult: "7266F104",
+      },
+      {
+         testName: "Member with Bad Email Address",
+         email: "jimgreen.311@gmail.com",
+         expectedResult: null,
+      },
+      {
+         testName: "Member with Case Sensitive Email Address",
+         email: "Jamesgreen.311@gmail.com",
+         expectedResult: "7266F104",
+      },
+   ]
+   for (r in testData) {
+      const test = testData[r]
+      const result = doesMemberHaveToken(test.email)
+      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
+   }
 }
 
 function testIsBoardMember() {
-   const email = "jamesgreen.311@gmail.com"
-   const bm = isBoardMember(email)
-   Logger.log(bm)
-
-   if (bm) {
-      const boardMember = getBoardMember(email)
-      Logger.log(boardMember)
-   } else {
-      Logger.log("Not a board member")
+   const testData = [
+      {
+         testName: "Board Member with Good Email Address",
+         email: "jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+      {
+         testName: "Board Member with Bad Email Address",
+         email: "jimgreen.311@gmail.com",
+         expectedResult: false,
+      },
+      {
+         testName: "Board Member with Case Sensitive Email Address",
+         email: "Jamesgreen.311@gmail.com",
+         expectedResult: true,
+      },
+   ]
+   for (r in testData) {
+      const test = testData[r]
+      const result = isBoardMember(test.email)
+      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
    }
 }
 
 function testGetBoardMembers() {
+   const testData = [
+      {
+         testName: "Board Members",
+         expectedResult: typeof {},
+      },
+   ]
+   for (r in testData) {
+      const test = testData[r]
+      const result = typeof getBoardMembers()
+      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
+   }
    const boardMembers = getBoardMembers()
    if (!isEmptyObject(boardMembers)) {
       for (let i = 0; i < boardMembers.length; i++) {
@@ -51,19 +153,29 @@ function testGetBoardMembers() {
 }
 
 function testGetMemberSecurityToken() {
-   const email = "jamesgreen.311@gmail.com"
-   const member = getMemberSecurityToken(email)
-   Logger.log(isEmptyObject(member) ? "Member not found" : member.token)
-   Logger.log(
-      isEmptyObject(member)
-         ? addSecurityToken(email)
-         : renewSecurityToken(member)
-   )
-}
-
-function testDoesMemberHaveToken() {
-   const token = doesMemberHaveToken("jamesgreen.311@gmail.com")
-   Logger.log(token)
+   const testData = [
+      {
+         testName: "Member with Good Email Address",
+         email: "jamesgreen.311@gmail.com",
+         expectedResult: "7266F104",
+      },
+      {
+         testName: "Member with Bad Email Address",
+         email: "jimgreen.311@gmail.com",
+         expectedResult: undefined,
+      },
+      {
+         testName: "Member with Case Sensitive Email Address",
+         email: "Jamesgreen.311@gmail.com",
+         expectedResult: "7266F104",
+      },
+   ]
+   for (r in testData) {
+      const test = testData[r]
+      const result = getMemberSecurityToken(test.email)
+      const assert = result.token === test.expectedResult ? "Pass" : "Fail"
+      Logger.log(`${test.testName} > ${assert}`)
+   }
 }
 
 function testGetDuesPayments() {
@@ -100,7 +212,13 @@ function testGetMemberByEmail() {
    }
 }
 
-function testMemberRunAll() {
+function testMasterMemberRunAll() {
+   testIsMember()
+   testIsMemberActive()
+   testIsMemberExhibitor()
+   testIsBoardMember()
+   testDoesMemberHaveToken()
+   testGetMemberSecurityToken()
    testGetBoardMembers()
    testGetMemberByEmail()
    testGetDuesPayments()
