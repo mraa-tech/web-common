@@ -55,31 +55,38 @@ function testSecureAccess() {
 
    Logger.log(
       "Test 1: Happy Path, expect true: %s",
-      happyPath ? "pass" : "fail"
+      happyPath ? "Passed" : "FAILED"
    )
    Logger.log(
       "Test 2: validBoardMemberInvalidToken, expect false: %s",
-      !validBoardMemberInvalidToken ? "pass" : "fail"
+      !validBoardMemberInvalidToken ? "Passed" : "FAILED"
    )
    Logger.log(
       "Test 3: validMemberValidToken, expect false: %s",
-      !validMemberValidToken ? "pass" : "fail"
+      !validMemberValidToken ? "Passed" : "FAILED"
    )
    Logger.log(
       "Test 4: invalidMemberValidToken, expect false: %s",
-      !invalidMemberValidToken ? "pass" : "fail"
+      !invalidMemberValidToken ? "Passed" : "FAILED"
    )
    Logger.log(
       "Test 5: validMemberInvalidToken, expect false: %s",
-      !validMemberInvalidToken ? "pass" : "fail"
+      !validMemberInvalidToken ? "Passed" : "FAILED"
    )
    Logger.log(
       "Test 6: invalidMemberInvalidToken, expect false: %s",
-      !invalidMemberInvalidToken ? "pass" : "fail"
+      !invalidMemberInvalidToken ? "Passed" : "FAILED"
    )
 }
 
 function testGetMembersEmailList() {
    const emailList = getMembersEmailList("membership")
    Logger.log(emailList)
+}
+
+function testMemberServicesRunAll() {
+   testAddSecurityToken()
+   testHasSecurityTokenExpired()
+   testSecureAccess()
+   testGetMembersEmailList()
 }
