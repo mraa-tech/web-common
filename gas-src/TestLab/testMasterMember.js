@@ -20,7 +20,7 @@ function testIsMemberExhibitor() {
    for (r in testData) {
       const test = testData[r]
       const result = isMember(test.email) && isMemberExhibitor(test.email)
-      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      const assert = result === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
 }
@@ -47,7 +47,7 @@ function testIsMemberActive() {
    for (r in testData) {
       const test = testData[r]
       const result = isMember(test.email) && isMemberActive(test.email)
-      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      const assert = result === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
 }
@@ -73,7 +73,7 @@ function testIsMember() {
    for (r in testData) {
       const test = testData[r]
       const result = isMember(test.email)
-      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      const assert = result === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
 }
@@ -99,7 +99,7 @@ function testDoesMemberHaveToken() {
    for (r in testData) {
       const test = testData[r]
       const result = doesMemberHaveToken(test.email)
-      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      const assert = result === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
 }
@@ -125,7 +125,7 @@ function testIsBoardMember() {
    for (r in testData) {
       const test = testData[r]
       const result = isBoardMember(test.email)
-      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      const assert = result === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
 }
@@ -140,7 +140,7 @@ function testGetBoardMembers() {
    for (r in testData) {
       const test = testData[r]
       const result = typeof getBoardMembers()
-      const assert = result === test.expectedResult ? "Pass" : "Fail"
+      const assert = result === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
    const boardMembers = getBoardMembers()
@@ -173,7 +173,7 @@ function testGetMemberSecurityToken() {
    for (r in testData) {
       const test = testData[r]
       const result = getMemberSecurityToken(test.email)
-      const assert = result.token === test.expectedResult ? "Pass" : "Fail"
+      const assert = result.token === test.expectedResult ? "Passed" : "FAILED"
       Logger.log(`${test.testName} > ${assert}`)
    }
 }

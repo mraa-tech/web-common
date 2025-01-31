@@ -31,6 +31,12 @@ function cfeTabDef(table) {
          headers: 1,
          summary: "none",
       },
+      openshows: {
+         name: "Open Shows",
+         type: "pivot",
+         headers: 1,
+         summary: "none",
+      },
       payments: {
          name: "Payments",
          type: "standard",
@@ -96,7 +102,7 @@ function cfeTabDef(table) {
 
 /**
  * Totals by exhibit name is a pivot table that summarizes the total entries and total paid for each exhibit by artist.
- * 
+ *
  * @returns {array} An array of exhibit entries
  */
 function getTotalsByExhibitName() {
@@ -195,7 +201,7 @@ function getCFEPDPivotTablesSchema(pt = "exhibittotals") {
 
 /**
  * Read the pivot table data from the Payment Dashboard sheet in the Call for Entries spreadsheet.
- * 
+ *
  * @param {string} pt name of the pivot table to retrive data from
  * @returns {array} An array of pivot table data
  */
@@ -340,6 +346,40 @@ function getOpenCalls() {
    }
 
    return openCalls
+}
+
+/**
+ * Retrieve all open shows from pivot table
+ *
+ * @returns {array} An array of open shows objects
+ */
+function getOpenShows() {
+   const cfeOpenShowsTableDef = cfeTabDef("openshows")
+   const headers = cfeOpenShowsTableDef.headers
+   const cfeOpenShows = connect(CALLFORENTRIES_ID).getSheetByName(
+      cfeOpenShowsTableDef.name
+   )
+   const cfeOpenShowsSchema = buildTableSchema(cfeOpenShows, headers)
+   const startRow = headers + 1
+   const startCol = 1
+   const endRow = cfeOpenShows.getLastRow() - 1
+   const endCol = cfeOpenShows.getLastColumn()
+   const cfeOpenShowsData = cfeOpenShows.getSheetValues(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+   )
+   let openShows = []
+   for (let row = 0; row < endRow; row++) {
+      let show = {}
+      for (let key in cfeOpenShowsSchema) {
+         let fldPos = cfeOpenShowsSchema[key] - 1 // zero based index
+         show[key] = cfeOpenShowsData[row][fldPos]
+      }
+      openShows.push(show)
+   }
+   return openShows
 }
 
 /**
