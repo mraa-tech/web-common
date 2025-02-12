@@ -2,7 +2,8 @@
 const MASTERMEMBER_ID = "1puqturm6WCBtfL3uaT_YICKHI9StLcPA4SosBuMs4ZY"
 // Id for Call For Entries Spreadsheet File
 const CALLFORENTRIES_ID = "1eJuLyL_MhXy_s8kKm8sYkUsJkzLMP7M-kfVzp_LxAVQ"
-
+const APPLICANTS_ID = "1t7KG2DUdTyT8e7tVYLYvsY0Zy1bBShTcJvIg9QoqJGs"
+const JURY_ID = "1W4xT_-t8rEBOMIYLKMKQQVFkatS6LXZzZqN6fNJlUZQ"
 /**
  * Get the master member spreadsheet file ID
  * Expose ID so it's available in MRAACommonLibraries
