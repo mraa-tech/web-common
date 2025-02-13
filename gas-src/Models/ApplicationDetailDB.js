@@ -10,8 +10,45 @@ function applicationDetailDB(table) {
          type: "standard",
          headers: 3,
       },
+      waiting: {
+         name: "To Be Juried",
+         type: "pivot",
+         headers: 1,
+      },
    }
    return tables[table]
+}
+
+function getWaitingToBeJuried(filter = "all") {
+   const applicationDetailTableDef = applicationDetailDB("waiting")
+   const headers = applicationDetailTableDef.headers
+   const conn = connect(APPLICANTS_ID)
+   const waitingTable = conn.getSheetByName(applicationDetailTableDef.name)
+   const waitingSchema = buildTableSchema(waitingTable, headers)
+   const startRow = headers + 1
+   const startCol = 1
+   const numRow = waitingTable.getLastRow() - startRow + 1
+   const numCol = waitingTable.getLastColumn()
+   const waitingData = waitingTable.getSheetValues(
+      startRow,
+      startCol,
+      numRow,
+      numCol
+   )
+   const waiting = []
+   waitingData.forEach((row) => {
+      const application = {}
+      for (let key in waitingSchema) {
+         let col = waitingSchema[key] - 1 //
+         application[key] = row[col]
+      }
+      if (filter === "all") {
+         waiting.push(application)
+      } else if (filter.toLowerCase() === application.email.toLowerCase()) {
+         waiting.push(application)
+      }
+   })
+   return waiting
 }
 
 function getApplicationDetail(filter = "all") {
@@ -85,4 +122,19 @@ function getApplicationSettings(filter = "all") {
       }
    })
    return settings
+}
+
+function addApplicants(applicants) {
+   const applicationDetailTableDef = applicationDetailDB("applicationdetail")
+   const headers = applicationDetailTableDef.headers
+   const conn = connect(APPLICANTS_ID)
+   const applicationDetailTable = conn.getSheetByName(
+      applicationDetailTableDef.name
+   )
+   const applicationDetailSchema = buildTableSchema(
+      applicationDetailTable,
+      headers
+   )
+
+   applicationDetailTable.appendRow(applicants)
 }

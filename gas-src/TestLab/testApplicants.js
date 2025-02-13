@@ -1,3 +1,53 @@
+function testGetWaitingToBeJuried() {
+   const testdata = [
+      {
+         testname: "getWaitingToBeJuried, All",
+         verbose: true,
+         filter: "all",
+         expectedresult: 5, // number of submissions,
+      },
+      {
+         testname: "getWaitingToBeJuried, by email",
+         verbose: true,
+         filter: "russellb100@gmail.com",
+         expectedresult: 1, // number of submissions,
+      },
+      {
+         testname: "getWaitingToBeJuried, with bad email",
+         verbose: true,
+         filter: "TomTester@gmail.com",
+         expectedresult: 0, // number of submissions,
+      },
+      {
+         testname: "getWaitingToBeJuried, email case insensitive",
+         verbose: true,
+         filter: "RussellB100@gmail.com",
+         expectedresult: 1, // number of submissions,
+      },
+   ]
+   // check for empty pivot table
+   const emptyPivot = getWaitingToBeJuried("all")
+   const emptyResult = emptyPivot[0].columns ? "FAILED" : "Passed"
+   if (emptyResult === "FAILED") {
+      Logger.log("getWaitingToBeJuried, empty pivot table")
+      return
+   }
+   Logger.log(`Test: ${testdata.testname}: > ${emptyResult}`)
+   testdata.forEach((testdata) => {
+      let waiting = getWaitingToBeJuried(testdata.filter)
+      let result = waiting.length === testdata.expectedresult
+      let assert = result ? "Passed" : "FAILED"
+      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      if (testdata.verbose) {
+         waiting.forEach((submission) => {
+            Logger.log(
+               `Applicant waiting to be juried: ${submission.email}, ${submission.firstname} ${submission.lastname}`
+            )
+         })
+      }
+   })
+}
+
 function testGetApplicationSettings() {
    const testdata = [
       {
