@@ -1,3 +1,38 @@
+function testAddJuryReview() {
+   const tableDefinition = membershipJuryDB("juryreview")
+   const testdata = [
+      {
+         testname: "Add a new jury review",
+         verbose: false,
+         filter: "all",
+         expectedresult: getTableRowCount(tableDefinition.name) + 1, // "rows before adding a new review",
+         skip: false,
+         data: [
+            {
+               applicantemail: "AvaWhite@email.com",
+               applicantlastname: "White",
+               applicantfirstname: "Ava",
+               revieweremail: "StevenWright@email.com",
+               reviewerlastname: "Wright",
+               reviewerfirstname: "Steven",
+               vote: "Accept",
+               reasonforvote: "Good work",
+               timestamp: new Date(),
+               reviewerfullname: "Steven Wright",
+               applicantfullname: "Ava White",
+            },
+         ],
+      },
+   ]
+   testdata.forEach((testdata) => {
+      let rowsAfterAdd = addJuryReview(testdata.data).getLastRow()
+
+      let assert =
+         rowsAfterAdd === testdata.expectedresult ? "Passed" : "FAILED"
+      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+   })
+}
+
 function testGetJurySubmissionCounts() {
    const testdata = [
       {
@@ -142,12 +177,14 @@ function testGetJuryAppSettings() {
 }
 
 function testGetJuryReviews() {
+   const tableDefinition = membershipJuryDB("juryreview")
    const testdata = [
       {
          testname: "getJuryReviews, All",
          verbose: false,
          filter: "all",
-         expectedresult: 62, // number of submissions,
+         expectedresult:
+            getTableRowCount(tableDefinition.name) - tableDefinition.headers, // "rows before adding a new review"
       },
       {
          testname: "getJuryReviews, by email",

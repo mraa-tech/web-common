@@ -1,3 +1,9 @@
+/**
+ * Returns a table definition for the specified table
+ *
+ * @param {string} table name tag for tabel definition
+ * @returns {object} table definition
+ */
 function membershipJuryDB(table) {
    const tables = {
       jurysubmissions: {
@@ -258,6 +264,11 @@ function getJuryReviews(filter = "all") {
    return juryReview
 }
 
+/**
+ * Get the total submissions for each applicant
+ * @param {string} filter nototal, all
+ * @returns {array} of submission counts from the pivot table
+ */
 function getJurySubmissionCounts(filter = "nototal") {
    const jurySubmissionsTableDef = membershipJuryDB("submissioncounts")
    const headers = jurySubmissionsTableDef.headers
@@ -290,4 +301,34 @@ function getJurySubmissionCounts(filter = "nototal") {
       }
    })
    return jurySubmissions
+}
+
+function addJuryReview(review) {
+   const juryReviewTableDef = membershipJuryDB("juryreview")
+   const headers = juryReviewTableDef.headers
+   const conn = connect(JURY_ID)
+   const juryReviewTable = conn.getSheetByName(juryReviewTableDef.name)
+   const juryReviewSchema = buildTableSchema(juryReviewTable, headers)
+
+   /**
+    * appendRow expects an array of values, not an object.
+    * review will be coming as a FormData object.
+    * convert from object to array, position of element in array is the column number.
+    * only one review is added at a time.
+    * it's being sent as an array of one object, this may change in the future.
+    */
+   const juryReview = []
+   review.forEach((row) => {
+      for (let key in juryReviewSchema) {
+         let col = juryReviewSchema[key] - 1 // convert to zero-based index
+         juryReview[col] = row[key]
+      }
+   })
+   return juryReviewTable.appendRow(juryReview)
+}
+
+function getTableRowCount(table) {
+   const conn = connect(JURY_ID)
+   const sheet = conn.getSheetByName(table)
+   return sheet.getLastRow()
 }

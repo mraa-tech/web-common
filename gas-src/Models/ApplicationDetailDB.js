@@ -1,3 +1,9 @@
+/**
+ * Returns a table definition for the specified table
+ *
+ * @param {string} table name tag for tabel definition
+ * @returns {object} table definition
+ */
 function applicationDetailDB(table) {
    const tables = {
       applicationdetail: {
@@ -19,6 +25,13 @@ function applicationDetailDB(table) {
    return tables[table]
 }
 
+/**
+ * Get the list of applicants waiting to be juried
+ * Datasource is To Be Juried table
+ *
+ * @param {string} filter all, applicant email
+ * @returns {Array} of waiting to be juried
+ */
 function getWaitingToBeJuried(filter = "all") {
    const applicationDetailTableDef = applicationDetailDB("waiting")
    const headers = applicationDetailTableDef.headers
@@ -51,6 +64,13 @@ function getWaitingToBeJuried(filter = "all") {
    return waiting
 }
 
+/**
+ * Get the application detail for each applicant
+ * Datasource is Application Detail table
+ *
+ * @param {string} filter all, applicant email
+ * @returns {array} application detail for each applicant
+ */
 function getApplicationDetail(filter = "all") {
    const applicationDetailTableDef = applicationDetailDB("applicationdetail")
    const headers = applicationDetailTableDef.headers
@@ -88,6 +108,13 @@ function getApplicationDetail(filter = "all") {
    return applicants
 }
 
+/**
+ * Get the application settings for the New Member Application
+ * Datasource is Settings table
+ *
+ * @param {string} filter all, any column name
+ * @returns {object} application settings
+ */
 function getApplicationSettings(filter = "all") {
    const applicationSettingsTableDef = applicationDetailDB("settings")
    const headers = applicationSettingsTableDef.headers
@@ -124,6 +151,12 @@ function getApplicationSettings(filter = "all") {
    return settings
 }
 
+/**
+ * Add a new applicant to the Application Detail table
+ * Datasource is Application Detail table
+ *
+ * @param {array} applicants
+ */
 function addApplicants(applicants) {
    const applicationDetailTableDef = applicationDetailDB("applicationdetail")
    const headers = applicationDetailTableDef.headers
