@@ -1,3 +1,46 @@
+function testGetJurySubmissionCounts() {
+   const testdata = [
+      {
+         testname: "getJurySubmissionCounts, All",
+         verbose: false,
+         filter: "all",
+         expectedresult: 5, // number of submissions,
+      },
+      {
+         testname: "getJurySubmissionCounts, with no grand total",
+         verbose: false,
+         filter: "nototal",
+         expectedresult: 4, // number of submissions,
+      },
+   ]
+   // check for empty pivot table
+   const emptyPivot = getJurySubmissionCounts()
+   const emptyResult = !emptyPivot[0].columns === "undefined"
+   if (emptyResult) {
+      Logger.log("getJurySubmissionCounts, empty pivot table")
+      return
+   }
+
+   testdata.forEach((testdata, t) => {
+      let submissions = getJurySubmissionCounts(testdata.filter)
+      let result = Object.keys(submissions).length === testdata.expectedresult
+      let assert = result ? "Passed" : "FAILED"
+      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      if (testdata.verbose) {
+         Object.keys(submissions).forEach((key) => {
+            Logger.log(
+               `Submission: ${submissions[key].email}, ${submissions[key].firstname} ${submissions[key].lastname}`
+            )
+         })
+      }
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
+   })
+}
+
 function testGetJuryVotes() {
    const testdata = [
       {
@@ -10,7 +53,7 @@ function testGetJuryVotes() {
       {
          testname: "getJuryVotes, by email",
          verbose: false,
-         filter: "EthanMoore@email.com",
+         filter: "AvaWhite@email.com",
          expectedresult: 1, // number of votes,
          skip: false,
       },
@@ -24,7 +67,7 @@ function testGetJuryVotes() {
       {
          testname: "getJuryVotes, email case insensitive",
          verbose: false,
-         filter: "ethanmoore@email.com",
+         filter: "avawhite@email.com",
          expectedresult: 1, // number of votes,
          skip: false,
       },
@@ -98,35 +141,35 @@ function testGetJuryAppSettings() {
    )
 }
 
-function testGetJuryReview() {
+function testGetJuryReviews() {
    const testdata = [
       {
-         testname: "getJuryReview, All",
+         testname: "getJuryReviews, All",
          verbose: false,
          filter: "all",
-         expectedresult: 1, // number of submissions,
+         expectedresult: 62, // number of submissions,
       },
       {
-         testname: "getJuryReview, by email",
+         testname: "getJuryReviews, by email",
          verbose: false,
-         filter: "tester@test.com",
-         expectedresult: 1, // number of submissions,
+         filter: "StevenWright@email.com",
+         expectedresult: 2, // number of submissions,
       },
       {
-         testname: "getJuryReview, with bad email",
+         testname: "getJuryReviews, with bad email",
          verbose: false,
          filter: "TomTester@gmail.com",
          expectedresult: 0, // number of submissions,
       },
       {
-         testname: "getJuryReview, email case insensitive",
+         testname: "getJuryReviews, email case insensitive",
          verbose: false,
-         filter: "Tester@test.com",
-         expectedresult: 1, // number of submissions,
+         filter: "stevenwright@email.com",
+         expectedresult: 2, // number of submissions,
       },
    ]
    testdata.forEach((testdata) => {
-      let juryReview = getJuryReview(testdata.filter)
+      let juryReview = getJuryReviews(testdata.filter)
       let result = juryReview.length === testdata.expectedresult
       let assert = result ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
@@ -146,13 +189,13 @@ function testGetJurySubmissions() {
          testname: "getJurySubmissions, All",
          verbose: false,
          filter: "all",
-         expectedresult: 30, // number of submissions,
+         expectedresult: 33, // number of submissions,
       },
       {
          testname: "getJurySubmissions, by email",
          verbose: false,
-         filter: "jamescsmither@yahoo.com",
-         expectedresult: 5, // number of submissions,
+         filter: "EmilyJohnson@email.com",
+         expectedresult: 7, // number of submissions,
       },
       {
          testname: "getJurySubmissions, with bad email",
@@ -163,8 +206,8 @@ function testGetJurySubmissions() {
       {
          testname: "getJurySubmissions, email case insensitive",
          verbose: false,
-         filter: "JamesCSmither@yahoo.com",
-         expectedresult: 5, // number of submissions,
+         filter: "emilyjohnson@email.com",
+         expectedresult: 7, // number of submissions,
       },
    ]
    testdata.forEach((testdata) => {
@@ -185,5 +228,6 @@ function testGetJurySubmissions() {
 function testJuryRunAll() {
    testGetJuryAppSettings()
    testGetJurySubmissions()
-   testGetJuryReview()
+   testGetJuryReviews()
+   testGetJuryVotes()
 }

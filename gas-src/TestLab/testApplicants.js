@@ -2,37 +2,37 @@ function testGetWaitingToBeJuried() {
    const testdata = [
       {
          testname: "getWaitingToBeJuried, All",
-         verbose: true,
+         verbose: false,
          filter: "all",
-         expectedresult: 5, // number of submissions,
+         expectedresult: 17, // number of submissions,
       },
       {
          testname: "getWaitingToBeJuried, by email",
-         verbose: true,
-         filter: "russellb100@gmail.com",
+         verbose: false,
+         filter: "henry.y@email.com",
          expectedresult: 1, // number of submissions,
       },
       {
          testname: "getWaitingToBeJuried, with bad email",
-         verbose: true,
+         verbose: false,
          filter: "TomTester@gmail.com",
          expectedresult: 0, // number of submissions,
       },
       {
          testname: "getWaitingToBeJuried, email case insensitive",
-         verbose: true,
-         filter: "RussellB100@gmail.com",
+         verbose: false,
+         filter: "Henry.Y@email.com",
          expectedresult: 1, // number of submissions,
       },
    ]
    // check for empty pivot table
    const emptyPivot = getWaitingToBeJuried("all")
-   const emptyResult = emptyPivot[0].columns ? "FAILED" : "Passed"
-   if (emptyResult === "FAILED") {
+   const emptyResult = emptyPivot[0].columns === "undefined"
+   if (emptyResult) {
       Logger.log("getWaitingToBeJuried, empty pivot table")
       return
    }
-   Logger.log(`Test: ${testdata.testname}: > ${emptyResult}`)
+   Logger.log(`Test: Empty Pivot Table: > ${emptyResult}`)
    testdata.forEach((testdata) => {
       let waiting = getWaitingToBeJuried(testdata.filter)
       let result = waiting.length === testdata.expectedresult
@@ -53,7 +53,7 @@ function testGetApplicationSettings() {
       {
          testname: "getApplicationSettings, All",
          filter: "all",
-         expectedresult: 4, // number of settings,
+         expectedresult: 5, // number of settings,
       },
       {
          testname: "getApplicationSettings, by field - Distribution List",
@@ -87,11 +87,11 @@ function testGetApplicationDetail() {
       {
          testname: "getApplicationDetail, All ",
          filter: "all",
-         expectedresult: 6, // number of applicants,
+         expectedresult: 25, // number of applicants,
       },
       {
          testname: "getApplicationDetail, by email ",
-         filter: "sssmith45@verizon.net",
+         filter: "mia.a@email.com",
          expectedresult: 1, // number of applicants,
       },
       {
@@ -101,7 +101,7 @@ function testGetApplicationDetail() {
       },
       {
          testname: "getApplicationDetail, email case insensitive ",
-         filter: "SSsmith45@verizon.net",
+         filter: "Mia.A@email.com",
          expectedresult: 1, // number of applicants,
       },
    ]
@@ -113,5 +113,12 @@ function testGetApplicationDetail() {
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
    })
 
-   Logger.log(getApplicationDetail("SSsmith45@verizon.net"))
+   Logger.log(getApplicationDetail("mia.a@email.com"))
+}
+
+function testApplicantsRunAll() {
+   testGetWaitingToBeJuried()
+   testGetApplicationSettings()
+   testGetApplicationDetail()
+   //testGetJuryReviews()
 }
