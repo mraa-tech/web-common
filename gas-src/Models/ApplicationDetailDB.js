@@ -14,7 +14,10 @@ function applicationDetailDB(table) {
       settings: {
          name: "Settings",
          type: "standard",
-         headers: 3,
+         headers: {
+            rows: 3,
+            columns: 1,
+         },
       },
       waiting: {
          name: "To Be Juried",
@@ -117,17 +120,18 @@ function getApplicationDetail(filter = "all") {
  */
 function getApplicationSettings(filter = "all") {
    const applicationSettingsTableDef = applicationDetailDB("settings")
-   const headers = applicationSettingsTableDef.headers
+   const headerRows = applicationSettingsTableDef.headers.rows
+   const headerColumns = applicationSettingsTableDef.headers.columns
    const conn = connect(APPLICANTS_ID)
    const applicationSettingsTable = conn.getSheetByName(
       applicationSettingsTableDef.name
    )
    const applicationSettingsSchema = buildTableSchema(
       applicationSettingsTable,
-      headers
+      headerRows
    )
-   const startRow = headers + 1
-   const startCol = 2
+   const startRow = headerRows + 1
+   const startCol = headerColumns + 1
    const numRow = applicationSettingsTable.getLastRow() - startRow + 1
    const numCol = applicationSettingsTable.getLastColumn() - startCol + 1
    const applicationSettingsData = applicationSettingsTable.getSheetValues(
@@ -157,7 +161,7 @@ function getApplicationSettings(filter = "all") {
  *
  * @param {array} applicants
  */
-function addApplicants(applicants) {
+function addApplicant(application) {
    const applicationDetailTableDef = applicationDetailDB("applicationdetail")
    const headers = applicationDetailTableDef.headers
    const conn = connect(APPLICANTS_ID)
@@ -169,5 +173,13 @@ function addApplicants(applicants) {
       headers
    )
 
-   applicationDetailTable.appendRow(applicants)
+   const a = []
+   application.forEach((row) => {
+      for (let key in applicationDetailSchema) {
+         let col = applicationDetailSchema[key] - 1 // convert to zero-based index
+         a[col] = row[key]
+      }
+   })
+
+   return applicationDetailTable.appendRow(a)
 }

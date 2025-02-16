@@ -5,7 +5,7 @@ function testAddJuryReview() {
          testname: "Add a new jury review",
          verbose: false,
          filter: "all",
-         expectedresult: getTableRowCount(tableDefinition.name) + 1, // "rows before adding a new review",
+         expectedresult: getTableRowCount(JURY_ID, tableDefinition.name) + 1, // rows after adding a new review
          skip: false,
          data: [
             {
@@ -24,28 +24,54 @@ function testAddJuryReview() {
          ],
       },
    ]
-   testdata.forEach((testdata) => {
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+         return
+      }
+
       let rowsAfterAdd = addJuryReview(testdata.data).getLastRow()
 
       let assert =
          rowsAfterAdd === testdata.expectedresult ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+
+      if (testdata.verbose) {
+         Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+         Logger.log(
+            `Test: ${testdata.testname}: > ${JSON.stringify(testdata.data)}`
+         )
+      }
+
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
    })
 }
 
 function testGetJurySubmissionCounts() {
+   const tableDefinition = membershipJuryDB("submissioncounts")
    const testdata = [
       {
          testname: "getJurySubmissionCounts, All",
          verbose: false,
          filter: "all",
-         expectedresult: 5, // number of submissions,
+         expectedresult:
+            getTableRowCount(JURY_ID, tableDefinition.name) -
+            tableDefinition.headers, // number of submissions,
+         skip: false,
       },
       {
          testname: "getJurySubmissionCounts, with no grand total",
          verbose: false,
          filter: "nototal",
-         expectedresult: 4, // number of submissions,
+         expectedresult:
+            getTableRowCount(JURY_ID, tableDefinition.name) -
+            tableDefinition.headers -
+            1, // number of submissions minus headers, minus total row,
+         skip: false,
       },
    ]
    // check for empty pivot table
@@ -57,10 +83,16 @@ function testGetJurySubmissionCounts() {
    }
 
    testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+         return
+      }
+
       let submissions = getJurySubmissionCounts(testdata.filter)
       let result = Object.keys(submissions).length === testdata.expectedresult
       let assert = result ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+
       if (testdata.verbose) {
          Object.keys(submissions).forEach((key) => {
             Logger.log(
@@ -77,12 +109,15 @@ function testGetJurySubmissionCounts() {
 }
 
 function testGetJuryVotes() {
+   const tableDefinition = membershipJuryDB("votes")
    const testdata = [
       {
          testname: "getJuryVotes, All",
          verbose: false,
          filter: "all",
-         expectedresult: 16, // number of votes,
+         expectedresult:
+            getTableRowCount(JURY_ID, tableDefinition.name) -
+            tableDefinition.headers, // number of votes,
          skip: false,
       },
       {
@@ -110,14 +145,17 @@ function testGetJuryVotes() {
          testname: "getJuryVotes, with no total",
          verbose: false,
          filter: "nototal",
-         expectedresult: 15, // number of votes,
+         expectedresult:
+            getTableRowCount(JURY_ID, tableDefinition.name) -
+            tableDefinition.headers -
+            tableDefinition.footer.rows, // number of votes,
          skip: false,
       },
       {
          testname: "getJuryVotes, with grand total",
          verbose: false,
          filter: "grandtotal",
-         expectedresult: 1, // number of votes,
+         expectedresult: tableDefinition.footer.rows, // number of votes,
          skip: false,
       },
    ]
@@ -154,18 +192,29 @@ function testGetJuryVotes() {
 }
 
 function testGetJuryAppSettings() {
+   const tableDefinition = membershipJuryDB("settings")
    const testdata = [
       {
          testname: "getJuryAppSettings, All",
          type: "all",
-         expectedresult: 5, // number of settings,
+         expectedresult: getTableColumnCount(JURY_ID, tableDefinition.name), // number of settings,
+         skip: false,
       },
    ]
    const settings = getJuryAppSettings()
-   testdata.forEach((testdata) => {
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+         return
+      }
       let result = Object.keys(settings).length === testdata.expectedresult
       let assert = result ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
    })
    Logger.log(`Test: Get Image Type List: ${settings.imagetypelist}`)
    const imagetypelist = settings.imagetypelist.split(",")
@@ -184,74 +233,101 @@ function testGetJuryReviews() {
          verbose: false,
          filter: "all",
          expectedresult:
-            getTableRowCount(tableDefinition.name) - tableDefinition.headers, // "rows before adding a new review"
+            getTableRowCount(JURY_ID, tableDefinition.name) -
+            tableDefinition.headers, // "rows before adding a new review"
+         skip: false,
       },
       {
-         testname: "getJuryReviews, by email",
+         testname: "getJuryReviews, by reviewer email",
          verbose: false,
          filter: "StevenWright@email.com",
-         expectedresult: 2, // number of submissions,
+         expectedresult: 7, // number of submissions,
+         skip: false,
       },
       {
          testname: "getJuryReviews, with bad email",
          verbose: false,
          filter: "TomTester@gmail.com",
          expectedresult: 0, // number of submissions,
+         skip: false,
       },
       {
-         testname: "getJuryReviews, email case insensitive",
+         testname: "getJuryReviews, reviewer email case insensitive",
          verbose: false,
          filter: "stevenwright@email.com",
-         expectedresult: 2, // number of submissions,
+         expectedresult: 7, // number of submissions,
+         skip: false,
       },
    ]
-   testdata.forEach((testdata) => {
-      let juryReview = getJuryReviews(testdata.filter)
-      let result = juryReview.length === testdata.expectedresult
-      let assert = result ? "Passed" : "FAILED"
-      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
-      if (testdata.verbose) {
-         juryReview.forEach((review) => {
-            Logger.log(
-               `Review by: ${review.revieweremail}, Vote: ${review.vote}, Comments: ${review.reasonforvote}`
-            )
-         })
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+      } else {
+         let juryReview = getJuryReviews(testdata.filter)
+         let result = juryReview.length === testdata.expectedresult
+         let assert = result ? "Passed" : "FAILED"
+         Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+
+         if (testdata.verbose) {
+            juryReview.forEach((review) => {
+               Logger.log(
+                  `Review by: ${review.revieweremail}, Vote: ${review.vote}, Comments: ${review.reasonforvote}`
+               )
+            })
+         }
+         Logger.log(
+            `================= End of test ${++t}) ${
+               testdata.testname
+            } =================`
+         )
       }
    })
 }
 
 function testGetJurySubmissions() {
+   const tableDefinition = membershipJuryDB("jurysubmissions")
    const testdata = [
       {
          testname: "getJurySubmissions, All",
          verbose: false,
          filter: "all",
-         expectedresult: 33, // number of submissions,
+         expectedresult:
+            getTableRowCount(JURY_ID, tableDefinition.name) -
+            tableDefinition.headers, // number of submissions,
+         skip: false,
       },
       {
-         testname: "getJurySubmissions, by email",
+         testname: "getJurySubmissions, by applicant email",
          verbose: false,
          filter: "EmilyJohnson@email.com",
          expectedresult: 7, // number of submissions,
+         skip: false,
       },
       {
          testname: "getJurySubmissions, with bad email",
          verbose: false,
          filter: "jamesgreen.311@gmail.com",
          expectedresult: 0, // number of submissions,
+         skip: false,
       },
       {
-         testname: "getJurySubmissions, email case insensitive",
+         testname: "getJurySubmissions, applicant email case insensitive",
          verbose: false,
          filter: "emilyjohnson@email.com",
          expectedresult: 7, // number of submissions,
+         skip: false,
       },
    ]
-   testdata.forEach((testdata) => {
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+      }
+
       let submissions = getJurySubmissions(testdata.filter)
       let result = Object.keys(submissions).length === testdata.expectedresult
       let assert = result ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+
       if (testdata.verbose) {
          submissions.forEach((submission) => {
             Logger.log(
@@ -259,6 +335,12 @@ function testGetJurySubmissions() {
             )
          })
       }
+
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
    })
 }
 
@@ -267,4 +349,5 @@ function testJuryRunAll() {
    testGetJurySubmissions()
    testGetJuryReviews()
    testGetJuryVotes()
+   testAddJuryReview()
 }

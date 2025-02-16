@@ -101,3 +101,20 @@ function buildTableSchema(sheet, headerStart = 1) {
    })
    return schema
 }
+
+/**
+ * Get the number of rows in a table
+ * @param {string} table name
+ * @returns {number} number of rows in table
+ */
+function getTableRowCount(id, table) {
+   const conn = connect(id)
+   const sheet = conn.getSheetByName(table)
+   return sheet.getLastRow()
+}
+
+function getTableColumnCount(id, table) {
+   const conn = connect(id)
+   const sheet = conn.getSheetByName(table)
+   return sheet.getLastColumn()
+}

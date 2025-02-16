@@ -327,8 +327,3 @@ function addJuryReview(review) {
    return juryReviewTable.appendRow(juryReview)
 }
 
-function getTableRowCount(table) {
-   const conn = connect(JURY_ID)
-   const sheet = conn.getSheetByName(table)
-   return sheet.getLastRow()
-}
