@@ -327,3 +327,25 @@ function addJuryReview(review) {
    return juryReviewTable.appendRow(juryReview)
 }
 
+function addJurySubmissions(submission) {
+   const jurySubmissionTableDef = membershipJuryDB("jurysubmissions")
+   const headers = jurySubmissionTableDef.headers
+   const conn = connect(JURY_ID)
+   const jurySubmissionTable = conn.getSheetByName(jurySubmissionTableDef.name)
+   const jurySubmissionSchema = buildTableSchema(jurySubmissionTable, headers)
+
+   const jurySubmission = []
+   submission.forEach((row) => {
+      for (let key in jurySubmissionSchema) {
+         let col = jurySubmissionSchema[key] - 1 // convert to zero-based index
+         jurySubmission[col] = row[key]
+      }
+   })
+   const t = jurySubmissionTable.appendRow(jurySubmission)
+   if (jurySubmissionSchema.phone) {
+      t.getRange(t.getLastRow(), jurySubmissionSchema.phone).setNumberFormat(
+         "(###) ###-####"
+      )
+   }
+   return t
+}

@@ -181,5 +181,27 @@ function addApplicant(application) {
       }
    })
 
-   return applicationDetailTable.appendRow(a)
+   /**
+    * add new row to the Application Detail table and then make the Payment Processed and Accept Application columns checkboxes
+    */
+   const t = applicationDetailTable.appendRow(a)
+   if (applicationDetailSchema.acceptapplication) {
+      t.getRange(
+         applicationDetailTable.getLastRow(),
+         applicationDetailSchema.acceptapplication
+      ).insertCheckboxes()
+   }
+   if (applicationDetailSchema.paymentprocessed) {
+      t.getRange(
+         applicationDetailTable.getLastRow(),
+         applicationDetailSchema.paymentprocessed
+      ).insertCheckboxes()
+   }
+   if (applicationDetailSchema.contactnumber) {
+      t.getRange(
+         applicationDetailTable.getLastRow(),
+         applicationDetailSchema.contactnumber
+      ).setNumberFormat("(###) ###-####")
+   }
+   return t
 }

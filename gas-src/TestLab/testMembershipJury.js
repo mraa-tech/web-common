@@ -1,3 +1,60 @@
+function testAddJurySubmissions() {
+   const tableDefinition = membershipJuryDB("jurysubmissions")
+   const testdata = [
+      {
+         testname: "Add a new jury submission",
+         verbose: false,
+         filter: "n/a",
+         expectedresult: getTableRowCount(JURY_ID, tableDefinition.name) + 1, // rows after adding a new submission
+         skip: false,
+         data: [
+            {
+               email: "ChuckBrown@email.com",
+               lastname: "Brown",
+               firstname: "Chuck",
+               phone: "8044567890",
+               worktitle: "Ava's Work",
+               width: "36",
+               height: "48",
+               medium: "Oil on canvas",
+               representationofwork: "Back",
+               filename: "computed from prior inputs",
+               fileid: "",
+               timestamp: new Date(),
+               applicanttoken: generateToken(),
+               fullname: "",
+            },
+         ],
+      },
+   ]
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+         return
+      }
+      // preprocess data
+      let data = testdata.data[0]
+      data.filename = `${data.firstname}-${data.lastname}-${data.worktitle}-${data.width}x${data.height}-${data.medium}-${data.representationofwork}`
+      data.fullname = `${data.firstname} ${data.lastname}`
+
+      let rowsAfterAdd = addJurySubmissions(testdata.data).getLastRow()
+      let assert =
+         rowsAfterAdd === testdata.expectedresult ? "Passed" : "FAILED"
+      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      if (testdata.verbose) {
+         Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+         Logger.log(
+            `Test: ${testdata.testname}: > ${JSON.stringify(testdata.data)}`
+         )
+      }
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
+   })
+}
+
 function testAddJuryReview() {
    const tableDefinition = membershipJuryDB("juryreview")
    const testdata = [
