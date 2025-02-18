@@ -113,6 +113,13 @@ function getTableRowCount(id, table) {
    return sheet.getLastRow()
 }
 
+/**
+ * Get the number of columns in a table
+ *
+ * @param {string} id
+ * @param {string} table name
+ * @return {number} number of columns in table
+ */
 function getTableColumnCount(id, table) {
    const conn = connect(id)
    const sheet = conn.getSheetByName(table)

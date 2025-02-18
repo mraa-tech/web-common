@@ -24,8 +24,36 @@ function applicationDetailDB(table) {
          type: "pivot",
          headers: 1,
       },
+      archives: {
+         name: "Application Archives",
+         type: "standard",
+         headers: 3,
+      },
    }
    return tables[table]
+}
+
+function archiveApplication(applicantemail) {
+   const conn = connect(APPLICANTS_ID)
+   const applicationDetailTableDef = applicationDetailDB("applicationdetail")
+   const applicationDetailTable = conn.getSheetByName(
+      applicationDetailTableDef.name
+   )
+   const applicationArchiveTableDef = applicationDetailDB("archives")
+   const applicationArchiveTable = conn.getSheetByName(
+      applicationArchiveTableDef.name
+   )
+
+   // get application detail can return multiple rows, but in this case it should only return one row.
+   const application = getApplicationDetail(applicantemail)[0]
+   // row number is needed to delete this applicant from the applicants detail table
+   const row = application.row
+   // remove row number before the application row is added to the archive table
+   delete application.row
+   applicationArchiveTable.appendRow(Object.values(application))
+   applicationDetailTable.deleteRow(row)
+
+   return applicationArchiveTable
 }
 
 /**
@@ -96,15 +124,17 @@ function getApplicationDetail(filter = "all") {
       numCol
    )
    const applicants = []
-   applicationDetailData.forEach((row) => {
+   applicationDetailData.forEach((row, i) => {
       const applicant = {}
       for (let key in applicationDetailSchema) {
          let col = applicationDetailSchema[key] - 1 // convert to zero-based index
          applicant[key] = row[col]
       }
+
       if (filter === "all") {
          applicants.push(applicant)
       } else if (applicant["email"].toLowerCase() === filter.toLowerCase()) {
+         applicant.row = i + 1 + headers
          applicants.push(applicant)
       }
    })

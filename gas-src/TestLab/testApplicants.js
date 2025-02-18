@@ -1,3 +1,52 @@
+function testArchiveApplication() {
+   const testdata = [
+      {
+         testname: "Archive an application",
+         verbose: false,
+         filter: "daniel.w@email.com",
+         expectedresult: {
+            // number of rows in the archive table after the move,
+            result1:
+               getTableRowCount(
+                  APPLICANTS_ID,
+                  applicationDetailDB("archives").name
+               ) + 1,
+            // number of rows in the application detail table after the move,
+            result2:
+               getTableRowCount(
+                  APPLICANTS_ID,
+                  applicationDetailDB("applicationdetail").name
+               ) - 1,
+         },
+         // rows after archiving an applicant, archived record will be removed from the application detail table
+         skip: false,
+      },
+   ]
+   const conn = connect(APPLICANTS_ID)
+   const applicationDetailTable = conn.getSheetByName(
+      applicationDetailDB("applicationdetail").name
+   )
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+         return
+      }
+      const archiveTable = archiveApplication(testdata.filter)
+      const rowsAfterAdd = archiveTable.getLastRow()
+      const rowsAfterRemove = applicationDetailTable.getLastRow()
+      const assert1 =
+         rowsAfterAdd === testdata.expectedresult.result1 ? true : false
+      const assert2 =
+         rowsAfterRemove === testdata.expectedresult.result2 ? true : false
+      const assert = assert1 && assert2 ? "Passed" : "FAILED"
+      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
+   })
+}
 function testAddApplicant() {
    const testdata = [
       {
