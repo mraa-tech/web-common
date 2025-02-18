@@ -33,6 +33,11 @@ function applicationDetailDB(table) {
    return tables[table]
 }
 
+/**
+ * Move an application from the application detail table to the application archive table
+ * @param {string} applicantemail 
+ * @returns {object} application archive table
+ */
 function archiveApplication(applicantemail) {
    const conn = connect(APPLICANTS_ID)
    const applicationDetailTableDef = applicationDetailDB("applicationdetail")
