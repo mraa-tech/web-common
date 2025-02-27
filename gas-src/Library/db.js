@@ -88,7 +88,7 @@ function getFldPos(schema, fldName) {
  * @returns {object} schema
  * @example buildTableSchema(memberdirectory, 2)
  */
-function buildTableSchema(sheet, headerStart = 1) {
+function buildTableSchema(sheet, headerStart = 1, withLabels = false) {
    const schema = {}
    const header = sheet
       .getRange(headerStart, 1, 1, sheet.getLastColumn())
@@ -96,7 +96,14 @@ function buildTableSchema(sheet, headerStart = 1) {
    header.forEach((fld, i) => {
       // If column name is blank do not include it in the schema.
       if (fld) {
-         schema[fld.replace(/\s/g, "").toLowerCase()] = i + 1
+         if (withLabels) {
+            schema[fld.replace(/\s/g, "").toLowerCase()] = {
+               label: fld,
+               colToIndex: () => i + 1,
+            }
+         } else {
+            schema[fld.replace(/\s/g, "").toLowerCase()] = i + 1
+         }
       }
    })
    return schema

@@ -1,11 +1,3 @@
-function testDBRunAll() {
-   testGetMasterMemberId()
-   testGetCallForEntriesId()
-   testBuildTableSchema("Member Directory", 2)
-
-   testGetTables()
-}
-
 function testGetMasterMemberId() {
    const masterMemberId = getMasterMemberId()
    Logger.log(`Master Member ID: ${masterMemberId}`)
@@ -16,14 +8,72 @@ function testGetCallForEntriesId() {
    Logger.log(`Call For Entries ID: ${callForEntriesId}`)
 }
 
-function testBuildTableSchema(table, headers = 1) {
-   Logger.log(`Table: ${table}, Headers: ${headers}`)
-   const tableSheet = connect(MASTERMEMBER_ID).getSheetByName(table)
+function testBuildTableSchema() {
+   const testdata = [
+      {
+         testname: "Build table schema with labels",
+         table: {
+            name: masterTabDef("memberdirectory").name,
+            headers: 2,
+            withLabels: true,
+         },
+         verbose: false,
+         filter: "n/a",
+         expectedresult:
+            getTableColumnCount(
+               MASTERMEMBER_ID,
+               masterTabDef("memberdirectory").name
+            ) - 1, // table has one blank column that won't be included in the schema
 
-   const tableSchema = buildTableSchema(tableSheet, headers)
-   for (let key in tableSchema) {
-      Logger.log(`Table Built Schema; ${key}: ${tableSchema[key]}`)
-   }
+         // rows after archiving an applicant, archived record will be removed from the application detail table
+         skip: false,
+      },
+      {
+         testname: "Build table schema without labels",
+         table: {
+            name: masterTabDef("memberdirectory").name,
+            headers: 2,
+            withLabels: false,
+         },
+         verbose: false,
+         filter: "n/a",
+         expectedresult:
+            getTableColumnCount(
+               MASTERMEMBER_ID,
+               masterTabDef("memberdirectory").name
+            ) - 1, // table has one blank column that won't be included in the schema
+
+         // rows after archiving an applicant, archived record will be removed from the application detail table
+         skip: false,
+      },
+   ]
+
+   const conn = connect(MASTERMEMBER_ID)
+
+   testdata.forEach((testdata, t) => {
+      if (testdata.skip) {
+         Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
+         return
+      }
+      const table = conn.getSheetByName(testdata.table.name)
+      const schema = buildTableSchema(
+         table,
+         testdata.table.headers,
+         testdata.table.withLabels
+      )
+      if (t === 0) {
+         Logger.log(schema.email.colToIndex())
+         Logger.log(schema.email.label)
+      }
+      const result = Object.keys(schema).length
+      const assert = result === testdata.expectedresult ? "Passed" : "FAILED"
+      Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      Logger.log(
+         `================= End of test ${++t}) ${
+            testdata.testname
+         } =================`
+      )
+   })
 }
 
 function testGetFldPos(fldName) {
@@ -88,4 +138,11 @@ function testGetTables() {
          `CFE Payment Dashboard Metadata Schema; ${key}: ${cfePaymentDashboardTable[key]}`
       )
    }
+}
+
+function testDBRunAll() {
+   testGetMasterMemberId()
+   testGetCallForEntriesId()
+   testBuildTableSchema()
+   testGetTables()
 }
