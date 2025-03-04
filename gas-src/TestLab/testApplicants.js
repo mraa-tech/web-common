@@ -243,6 +243,7 @@ function testGetApplicationDetail() {
       {
          testname: "getApplicationDetail, All ",
          filter: "all",
+         withColumnLabels: false,
          expectedresult:
             getTableRowCount(APPLICANTS_ID, tableDefinition.name) -
             tableDefinition.headers, // number of applicants,
@@ -252,6 +253,7 @@ function testGetApplicationDetail() {
       {
          testname: "getApplicationDetail, by email ",
          filter: "mia.a@email.com",
+         withColumnLabels: false,
          expectedresult: 1, // number of applicants,
          verbose: false,
          skip: false,
@@ -259,6 +261,7 @@ function testGetApplicationDetail() {
       {
          testname: "getApplicationDetail, bad email ",
          filter: "jamesgreen.311@gmail.com",
+         withColumnLabels: false,
          expectedresult: 0, // number of applicants,
          verbose: false,
          skip: false,
@@ -266,7 +269,16 @@ function testGetApplicationDetail() {
       {
          testname: "getApplicationDetail, email case insensitive ",
          filter: "Mia.A@email.com",
+         withColumnLabels: false,
          expectedresult: 1, // number of applicants,
+         verbose: false,
+         skip: false,
+      },
+      {
+         testname: "getApplicationDetail, with column labels ",
+         filter: "mia.a@email.com",
+         withColumnLabels: true,
+         expectedresult: 1,
          verbose: false,
          skip: false,
       },
@@ -277,7 +289,10 @@ function testGetApplicationDetail() {
          Logger.log(`Test: ${testdata.testname}: > SKIPPED`)
          return
       }
-      let applicants = getApplicationDetail(testdata.filter)
+      let applicants = getApplicationDetail(
+         testdata.filter,
+         testdata.withColumnLabels
+      )
       let result = Object.keys(applicants).length === testdata.expectedresult
       let assert = result ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
