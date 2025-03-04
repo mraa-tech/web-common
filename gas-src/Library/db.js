@@ -88,7 +88,7 @@ function getFldPos(schema, fldName) {
  * @returns {object} schema
  * @example buildTableSchema(memberdirectory, 2)
  */
-function buildTableSchema(sheet, headerStart = 1, withLabels = false) {
+function buildTableSchema(sheet, headerStart = 1) {
    const schema = {}
    const header = sheet
       .getRange(headerStart, 1, 1, sheet.getLastColumn())
@@ -96,14 +96,31 @@ function buildTableSchema(sheet, headerStart = 1, withLabels = false) {
    header.forEach((fld, i) => {
       // If column name is blank do not include it in the schema.
       if (fld) {
-         if (withLabels) {
-            schema[fld.replace(/\s/g, "").toLowerCase()] = {
-               label: fld,
-               colToIndex: () => i + 1,
-            }
-         } else {
-            schema[fld.replace(/\s/g, "").toLowerCase()] = i + 1
-         }
+         schema[fld.replace(/\s/g, "").toLowerCase()] = i + 1
+      }
+   })
+   return schema
+}
+
+/**
+ * Builds a table schema from a spreadsheet with a header row.
+ * Works best if the sheet is not a dashboard type.
+ * Note: dashboard is defined as a sheet wit multiple pivot tables.
+ *
+ * @param {object} sheet
+ * @param {Integer} headerStart (default 1)
+ * @returns {object} schema
+ * @example buildTableSchema(memberdirectory, 2)
+ */
+function buildTableSchemaWithLabels(sheet, headerStart = 1) {
+   const schema = {}
+   const header = sheet
+      .getRange(headerStart, 1, 1, sheet.getLastColumn())
+      .getDisplayValues()[0]
+   header.forEach((fld, i) => {
+      // If column name is blank do not include it in the schema.
+      if (fld) {
+         schema[fld] = i + 1
       }
    })
    return schema

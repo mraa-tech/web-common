@@ -1,3 +1,13 @@
+function testBuildTableSchemaBoth() {
+   const conn = connect(MASTERMEMBER_ID)
+   const table = conn.getSheetByName(masterTabDef("memberdirectory").name)
+   const headers = masterTabDef("memberdirectory").headers
+   const schemaNoLabels = buildTableSchema(table, headers)
+   const schemaWithLabels = buildTableSchemaWithLabels(table, headers)
+   Logger.log(`Schema No Labels: ${schemaNoLabels}`)
+   Logger.log(`Schema With Labels: ${schemaWithLabels}`)
+}
+
 function testGetMasterMemberId() {
    const masterMemberId = getMasterMemberId()
    Logger.log(`Master Member ID: ${masterMemberId}`)
@@ -56,14 +66,14 @@ function testBuildTableSchema() {
          return
       }
       const table = conn.getSheetByName(testdata.table.name)
-      const schema = buildTableSchema(
+      const schema = buildTableSchema(table, testdata.table.headers)
+      const schemaWithLabels = buildTableSchemaWithLabels(
          table,
-         testdata.table.headers,
-         testdata.table.withLabels
+         testdata.table.headers
       )
       if (t === 0) {
-         Logger.log(schema.email.colToIndex())
-         Logger.log(schema.email.label)
+         Logger.log(schemaWithLabels.email.colToIndex())
+         Logger.log(schemaWithLabels.email.label)
       }
       const result = Object.keys(schema).length
       const assert = result === testdata.expectedresult ? "Passed" : "FAILED"

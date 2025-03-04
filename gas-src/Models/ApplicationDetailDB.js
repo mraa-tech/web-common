@@ -107,17 +107,14 @@ function getWaitingToBeJuried(filter = "all") {
  * @param {string} filter all, applicant email
  * @returns {array} application detail for each applicant
  */
-function getApplicationDetail(filter = "all") {
+function getApplicationDetail(filter = "all", withColumnLabels = false) {
    const applicationDetailTableDef = applicationDetailDB("applicationdetail")
    const headers = applicationDetailTableDef.headers
    const conn = connect(APPLICANTS_ID)
    const applicationDetailTable = conn.getSheetByName(
       applicationDetailTableDef.name
    )
-   const applicationDetailSchema = buildTableSchema(
-      applicationDetailTable,
-      headers
-   )
+
    const startRow = headers + 1
    const startCol = 1
    const numRow = applicationDetailTable.getLastRow() - startRow + 1
@@ -128,6 +125,18 @@ function getApplicationDetail(filter = "all") {
       numRow,
       numCol
    )
+   let applicationDetailSchema = {}
+   if (withColumnLabels) {
+      applicationDetailSchema = buildTableSchemaWithLabels(
+         applicationDetailTable,
+         headers
+      )
+   } else {
+      applicationDetailSchema = buildTableSchema(
+         applicationDetailTable,
+         headers
+      )
+   }
    const applicants = []
    applicationDetailData.forEach((row, i) => {
       const applicant = {}
@@ -136,9 +145,16 @@ function getApplicationDetail(filter = "all") {
          applicant[key] = row[col]
       }
 
+      let applicantEmail = ""
+      if (withColumnLabels) {
+         applicantEmail = applicant["Email"].toLowerCase()
+      } else {
+         applicantEmail = applicant["email"].toLowerCase()
+      }
+
       if (filter === "all") {
          applicants.push(applicant)
-      } else if (applicant["email"].toLowerCase() === filter.toLowerCase()) {
+      } else if (applicantEmail === filter.toLowerCase()) {
          applicant.row = i + 1 + headers
          applicants.push(applicant)
       }
