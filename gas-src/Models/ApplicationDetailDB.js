@@ -119,12 +119,10 @@ function getApplicationDetail(filter = "all", withColumnLabels = false) {
    const startCol = 1
    const numRow = applicationDetailTable.getLastRow() - startRow + 1
    const numCol = applicationDetailTable.getLastColumn()
-   const applicationDetailData = applicationDetailTable.getSheetValues(
-      startRow,
-      startCol,
-      numRow,
-      numCol
-   )
+   const applicationDetailData = applicationDetailTable
+      .getRange(startRow, startCol, numRow, numCol)
+      .getDisplayValues()
+
    let applicationDetailSchema = {}
    if (withColumnLabels) {
       applicationDetailSchema = buildTableSchemaWithLabels(

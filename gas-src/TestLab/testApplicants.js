@@ -296,6 +296,11 @@ function testGetApplicationDetail() {
       let result = Object.keys(applicants).length === testdata.expectedresult
       let assert = result ? "Passed" : "FAILED"
       Logger.log(`Test: ${testdata.testname}: > ${assert}`)
+      if (testdata.verbose) {
+         applicants.forEach((applicant) => {
+            Logger.log(applicant)
+         })
+      }
       Logger.log(
          `================= End of test ${++t}) ${
             testdata.testname
